@@ -5,7 +5,10 @@
         "label": "Submit",
         "url": "https://httpbin.org/anything",
         "method": "POST",
-        "variant": "primary"
+        "variant": "primary",
+        "body": {
+          "$formConfig": true
+        }
       },
       {
         "type": "reset",
@@ -20,49 +23,93 @@
       "label": "Checkbox",
       "keyName": "disabled",
       "component": "Switch",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "valuePropName": "checked",
       "tooltip": "Toggle form disabled state",
-      "props": { "checkedChildren": "Disabled", "unCheckedChildren": "Enabled" }
+      "props": {
+        "checkedChildren": "Disabled",
+        "unCheckedChildren": "Enabled"
+      }
     },
     {
       "label": "Radio",
       "keyName": "radio",
       "component": "Radio.Group",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "options": [
-        { "label": "Apple", "value": "apple" },
-        { "label": "Pear", "value": "pear" }
-      ]
+        {
+          "label": "Apple",
+          "value": "apple"
+        },
+        {
+          "label": "Pear",
+          "value": "pear"
+        }
+      ],
+      "props": {
+        "optionType": "button"
+      }
     },
     {
       "label": "Input",
       "keyName": "input",
       "component": "Input",
-      "col": { "span": 24 },
-      "props": { "placeholder": "Enter text" }
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "placeholder": "Enter text"
+      }
     },
     {
       "label": "Select",
       "keyName": "select",
       "component": "Select",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "options": [
-        { "label": "Demo", "value": "demo" },
-        { "label": "Option A", "value": "a" },
-        { "label": "Option B", "value": "b" }
+        {
+          "label": "Demo",
+          "value": "demo"
+        },
+        {
+          "label": "Option A",
+          "value": "a"
+        },
+        {
+          "label": "Option B",
+          "value": "b"
+        }
       ],
-      "props": { "placeholder": "Please select" }
+      "props": {
+        "placeholder": "Please select"
+      }
     },
     {
       "label": "TreeSelect",
       "keyName": "treeSelect",
       "component": "TreeSelect",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "props": {
         "placeholder": "Please select",
         "treeData": [
-          { "title": "Light", "value": "light", "children": [{ "title": "Bamboo", "value": "bamboo" }] }
+          {
+            "title": "Light",
+            "value": "light",
+            "children": [
+              {
+                "title": "Bamboo",
+                "value": "bamboo"
+              }
+            ]
+          }
         ]
       }
     },
@@ -70,79 +117,297 @@
       "label": "Cascader",
       "keyName": "cascader",
       "component": "Cascader",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "options": [
         {
           "label": "Zhejiang",
           "value": "zhejiang",
           "children": [
-            { "label": "Hangzhou", "value": "hangzhou" }
+            {
+              "label": "Hangzhou",
+              "value": "hangzhou"
+            }
           ]
         },
         {
           "label": "Jiangsu",
           "value": "jiangsu",
           "children": [
-            { "label": "Nanjing", "value": "nanjing" }
+            {
+              "label": "Nanjing",
+              "value": "nanjing"
+            }
           ]
         }
       ],
-      "props": { "placeholder": "Please select" }
+      "props": {
+        "placeholder": "Please select"
+      }
     },
     {
       "label": "DatePicker",
       "keyName": "datePicker",
       "component": "DatePicker",
-      "col": { "span": 12 },
-      "props": { "placeholder": "Select date", "style": { "width": "100%" } }
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "placeholder": "Select date",
+        "style": {
+          "width": "100%"
+        }
+      }
     },
     {
       "label": "TimePicker",
       "keyName": "timePicker",
       "component": "TimePicker",
-      "col": { "span": 12 },
-      "props": { "placeholder": "Select time", "style": { "width": "100%" } }
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "placeholder": "Select time",
+        "style": {
+          "width": "100%"
+        }
+      }
     },
     {
       "label": "InputNumber",
       "keyName": "inputNumber",
       "component": "InputNumber",
-      "col": { "span": 24 },
-      "props": { "min": 0, "max": 9999, "style": { "width": "100%" } }
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "min": 0,
+        "max": 9999,
+        "style": {
+          "width": "100%"
+        }
+      }
     },
     {
       "label": "TextArea",
       "keyName": "textArea",
       "component": "Input.TextArea",
-      "col": { "span": 24 },
-      "props": { "rows": 4, "placeholder": "Enter multiple lines of text" }
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "rows": 4,
+        "placeholder": "Enter multiple lines of text"
+      }
     },
     {
       "label": "Switch",
       "keyName": "switch",
       "component": "Switch",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "valuePropName": "checked",
-      "props": { "checkedChildren": "ON", "unCheckedChildren": "OFF" }
+      "props": {
+        "checkedChildren": "ON",
+        "unCheckedChildren": "OFF"
+      }
     },
     {
-      "label": "Upload",
-      "keyName": "upload",
-      "component": "Upload",
-      "col": { "span": 24 },
-      "valuePropName": "fileList",
-      "props": { "listType": "picture-card" }
+      "label": "Slider",
+      "keyName": "slider",
+      "component": "Slider",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "min": 0,
+        "max": 100,
+        "marks": {
+          "0": "0",
+          "50": "50",
+          "100": "100"
+        }
+      }
+    },
+    {
+      "label": "ColorPicker",
+      "keyName": "color",
+      "component": "ColorPicker",
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "showText": true
+      }
+    },
+    {
+      "label": "Rate",
+      "keyName": "rate",
+      "component": "Rate",
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "allowHalf": true,
+        "count": 5
+      }
+    },
+    {
+      "label": "Mentions",
+      "keyName": "mentions",
+      "component": "Mentions",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "placeholder": "Type @ to mention someone",
+        "rows": 3,
+        "options": [
+          {
+            "value": "afc163",
+            "label": "afc163"
+          },
+          {
+            "value": "zombiej",
+            "label": "zombiej"
+          },
+          {
+            "value": "yesmeck",
+            "label": "yesmeck"
+          }
+        ]
+      }
     },
     {
       "label": "Checkbox Group",
       "keyName": "checkboxGroup",
       "component": "Checkbox.Group",
-      "col": { "span": 24 },
+      "col": {
+        "span": 24
+      },
       "options": [
-        { "label": "Apple", "value": "apple" },
-        { "label": "Pear", "value": "pear" },
-        { "label": "Orange", "value": "orange" }
+        {
+          "label": "Apple",
+          "value": "apple"
+        },
+        {
+          "label": "Pear",
+          "value": "pear"
+        },
+        {
+          "label": "Orange",
+          "value": "orange"
+        }
       ]
+    },
+    {
+      "label": "Transfer",
+      "keyName": "transfer",
+      "component": "Transfer",
+      "col": {
+        "span": 24
+      },
+      "options": [
+        {
+          "label": "Content 1",
+          "value": "0"
+        },
+        {
+          "label": "Content 2",
+          "value": "1"
+        },
+        {
+          "label": "Content 3",
+          "value": "2"
+        },
+        {
+          "label": "Content 4",
+          "value": "3"
+        },
+        {
+          "label": "Content 5",
+          "value": "4"
+        },
+        {
+          "label": "Content 6",
+          "value": "5"
+        },
+        {
+          "label": "Content 7",
+          "value": "6"
+        },
+        {
+          "label": "Content 8",
+          "value": "7"
+        },
+        {
+          "label": "Content 9",
+          "value": "8"
+        },
+        {
+          "label": "Content 10",
+          "value": "9"
+        }
+      ],
+      "props": {
+        "showSearch": true
+      }
+    },
+    {
+      "label": "Tree",
+      "keyName": "tree",
+      "component": "Tree",
+      "col": {
+        "span": 24
+      },
+      "valuePropName": "checkedKeys",
+      "props": {
+        "checkable": true,
+        "defaultExpandAll": true,
+        "treeData": [
+          {
+            "title": "Parent 1",
+            "key": "0-0",
+            "children": [
+              {
+                "title": "Child 1-1",
+                "key": "0-0-0",
+                "children": [
+                  {
+                    "title": "Grandchild 1-1-1",
+                    "key": "0-0-0-0"
+                  }
+                ]
+              },
+              {
+                "title": "Child 1-2",
+                "key": "0-0-1"
+              }
+            ]
+          },
+          {
+            "title": "Parent 2",
+            "key": "0-1",
+            "children": [
+              {
+                "title": "Child 2-1",
+                "key": "0-1-0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Upload",
+      "keyName": "upload",
+      "component": "Upload",
+      "col": {
+        "span": 24
+      },
+      "valuePropName": "fileList"
     }
   ],
   "formData": {
@@ -150,14 +415,46 @@
     "radio": "apple",
     "input": "",
     "select": "demo",
-    "treeSelect": null,
-    "cascader": null,
-    "datePicker": null,
-    "timePicker": null,
+    "treeSelect": "bamboo",
+    "cascader": [
+      "jiangsu",
+      "nanjing"
+    ],
+    "datePicker": "2026-05-11",
+    "timePicker": "15:17:15",
     "inputNumber": 0,
-    "textArea": "",
+    "textArea": "111111",
     "switch": true,
-    "upload": [],
-    "checkboxGroup": []
+    "slider": 30,
+    "color": "#5b6a7e",
+    "rate": 3.5,
+    "mentions": "@afc163 ",
+    "checkboxGroup": [
+      "apple",
+      "orange"
+    ],
+    "transfer": [
+      "2",
+      "1",
+      "3",
+      "5"
+    ],
+    "tree": [
+      "0-0-0-0",
+      "0-1-0"
+    ],
+    "upload": [
+      {
+        "uid": "rc-upload-1778483705235-3",
+        "lastModified": 1778482714658,
+        "lastModifiedDate": "2026-05-11T06:58:34.658Z",
+        "name": "13.ts",
+        "size": 5064,
+        "type": "",
+        "percent": 0,
+        "originFileObj": {},
+        "status": "uploading"
+      }
+    ]
   }
 }

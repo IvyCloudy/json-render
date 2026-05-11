@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Form, Row, Col, Input, InputNumber, Select, DatePicker, Switch, Radio, Checkbox, TimePicker, Cascader, TreeSelect, Upload, Button, Tooltip } from 'antd';
+import { Form, Row, Col, Input, InputNumber, Select, DatePicker, Switch, Radio, Checkbox, TimePicker, Cascader, TreeSelect, Upload, Button, Tooltip, Slider, ColorPicker, Rate, Mentions, Transfer, Tree } from 'antd';
 import { QuestionCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { FormConfigItem, AntdComponentName, FORM_CONFIG_KEY, FORM_DATA_KEY, FORM_META_KEY, getFormData } from './formConfigTypes';
@@ -25,6 +25,12 @@ const COMPONENT_MAP: Record<AntdComponentName, React.ComponentType<any>> = {
   'Cascader': Cascader,
   'TreeSelect': TreeSelect,
   'Upload': Upload,
+  'Slider': Slider,
+  'ColorPicker': ColorPicker,
+  'Rate': Rate,
+  'Mentions': Mentions,
+  'Transfer': Transfer,
+  'Tree': Tree,
 };
 
 function readFormConfig(data: unknown): FormConfigItem[] | null {
@@ -56,6 +62,10 @@ function convertFormValues(values: Record<string, unknown>, config: FormConfigIt
     }
     if (item.component === 'TimePicker' && dayjs.isDayjs(val)) {
       converted[item.keyName] = val.format('HH:mm:ss');
+    }
+    if (item.component === 'ColorPicker') {
+      const cv = val as any;
+      converted[item.keyName] = typeof cv === 'string' ? cv : cv?.toHexString?.() ?? String(cv);
     }
   }
   return converted;
@@ -105,6 +115,59 @@ const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
         <Upload {...componentProps}>
           <Button icon={<ReloadOutlined />}>Upload</Button>
         </Upload>
+      </Form.Item>
+    );
+  }
+
+  if (item.component === 'ColorPicker') {
+    return (
+      <Form.Item
+        name={item.keyName}
+        label={label}
+        rules={rules}
+        getValueFromEvent={(color: any) => color?.toHexString?.() ?? color}
+        normalize={(value: any) => {
+          if (typeof value === 'string') return value;
+          return value?.toHexString?.() ?? value;
+        }}
+      >
+        <ColorPicker {...componentProps} />
+      </Form.Item>
+    );
+  }
+
+  if (item.component === 'Transfer') {
+    return (
+      <Form.Item
+        name={item.keyName}
+        label={label}
+        rules={rules}
+        valuePropName="targetKeys"
+      >
+        <Transfer
+          dataSource={item.options?.map((o) => ({
+            key: String(o.value),
+            title: String(o.label ?? o.value),
+          })) ?? []}
+          render={(item: any) => item.title ?? item.key}
+          oneWay={componentProps.oneWay}
+          showSearch={componentProps.showSearch}
+          {...componentProps}
+        />
+      </Form.Item>
+    );
+  }
+
+  if (item.component === 'Tree') {
+    componentProps.treeData = componentProps.treeData ?? item.options;
+    return (
+      <Form.Item
+        name={item.keyName}
+        label={label}
+        rules={rules}
+        valuePropName={item.valuePropName ?? 'checkedKeys'}
+      >
+        <Tree checkable {...componentProps} />
       </Form.Item>
     );
   }

@@ -49,4 +49,10 @@ export type AntdComponentName =
   | 'TimePicker'
   | 'Cascader'
   | 'TreeSelect'
-  | 'Upload';
+  | 'Upload'
+  | 'Slider'
+  | 'ColorPicker'
+  | 'Rate'
+  | 'Mentions'
+  | 'Transfer'
+  | 'Tree';
