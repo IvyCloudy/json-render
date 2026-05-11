@@ -1,0 +1,49 @@
+{
+  "nothing": null,
+  "emptyString": "",
+  "emptyArray": [
+    "1"
+  ],
+  "emptyObject": {},
+  "boolTrue": true,
+  "boolFalse": false,
+  "zero": 0,
+  "negative": -42,
+  "big": 9007199254740991,
+  "float": 3.14159,
+  "scientific": 1.23e-9,
+  "unicode": "你好，世界 🌍 🚀 ñ é ü",
+  "escaped": "Line1\nLine2\t\"quoted\" \\back\\",
+  "longString": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  "mixed": [
+    1,
+    "two",
+    3,
+    null,
+    true,
+    false,
+    [
+      1,
+      2,
+      [
+        3,
+        [
+          4,
+          [
+            5
+          ]
+        ]
+      ]
+    ],
+    {
+      "k": "v"
+    }
+  ],
+  "weirdKeys": {
+    "key with space": 1,
+    "key.with.dots": 2,
+    "key[with]brackets": 3,
+    "中文键": 4,
+    "🔑": "emoji-key"
+  }
+}

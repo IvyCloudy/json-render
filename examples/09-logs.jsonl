@@ -1,0 +1,11 @@
+
+{"ts":"2026-04-18T10:00:01Z","level":"info", "service":"api",     "msg":"server started","port":3000}
+{"ts":"2026-04-18T10:00:05Z","level":"info", "service":"api",     "msg":"GET /health","status":200,"rtMs":3}
+{"ts":"2026-04-18T10:01:10Z","level":"warn", "service":"worker",  "msg":"queue depth high","depth":128}
+{"ts":"2026-04-18T10:02:33Z","level":"error","service":"api",     "msg":"db timeout","op":"select","rtMs":5001}
+{"ts":"2026-04-18T10:03:07Z","level":"info", "service":"api",     "msg":"POST /login","userId":42,"status":200,"rtMs":58}
+{"ts":"2026-04-18T10:04:12Z","level":"debug","service":"auth",    "msg":"token verified","userId":42}
+{"ts":"2026-04-18T10:05:45Z","level":"info", "service":"api",     "msg":"GET /users","status":200,"rtMs":12}
+{"ts":"2026-04-18T10:06:21Z","level":"warn", "service":"cache",   "msg":"miss rate high","rate":0.42}
+{"ts":"2026-04-18T10:07:00Z","level":"error","service":"worker",  "msg":"task failed","taskId":"t-881","retry":2}
+{"ts":"2026-04-18T10:08:15Z","level":"info", "service":"api",     "msg":"POST /logout","userId":42,"status":204,"rtMs":7}

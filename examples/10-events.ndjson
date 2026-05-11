@@ -1,0 +1,11 @@
+
+{"eventId":"e-0001","type":"page_view",  "userId":"u-1001","page":"/home",     "ts":"2026-04-18T09:00:12Z"}
+{"eventId":"e-0002","type":"click",      "userId":"u-1001","target":"#signup", "ts":"2026-04-18T09:00:21Z"}
+{"eventId":"e-0003","type":"signup",     "userId":"u-1001","plan":"free",      "ts":"2026-04-18T09:00:45Z"}
+{"eventId":"e-0004","type":"page_view",  "userId":"u-1002","page":"/pricing",  "ts":"2026-04-18T09:01:03Z"}
+{"eventId":"e-0005","type":"purchase",   "userId":"u-1002","amount":29.0,"currency":"USD","ts":"2026-04-18T09:02:17Z"}
+{"eventId":"e-0006","type":"page_view",  "userId":"u-1003","page":"/docs",     "ts":"2026-04-18T09:03:30Z"}
+{"eventId":"e-0007","type":"search",     "userId":"u-1003","q":"jsonpath",     "ts":"2026-04-18T09:03:41Z"}
+{"eventId":"e-0008","type":"click",      "userId":"u-1003","target":"#result-2","ts":"2026-04-18T09:03:55Z"}
+{"eventId":"e-0009","type":"error",      "userId":"u-1001","msg":"network_timeout","ts":"2026-04-18T09:05:12Z"}
+{"eventId":"e-0010","type":"logout",     "userId":"u-1001",                    "ts":"2026-04-18T09:10:00Z"}

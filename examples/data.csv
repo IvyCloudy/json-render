@@ -1,0 +1,9 @@
+id,name,age,email,active,role
+1,Alice,29,alice@example.com,true,admin
+2,Bob,34,bob@example.com,true,user
+3,Charlie,22,charlie@example.com,false,user
+4,Diana,41,diana@example.com,true,editor
+5,Eve,30,eve@example.com,false,user
+6,Frank,27,frank@example.com,true,user
+7,Grace,38,grace@example.com,true,admin
+8,Henry,45,henry@example.com,false,user

@@ -1,0 +1,24 @@
+{
+  "$schema": "./06-config.schema.json",
+  "appName": "MyAwesomeApp",
+  "environment": "development",
+  "port": 3000,
+  "debug": true,
+  "logLevel": "info",
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "name": "appdb",
+    "ssl": false
+  },
+  "features": {
+    "enableAnalytics": false,
+    "enableBetaUI": true,
+    "maxUploadMB": 25,
+    "updateTime": "2026-04-18 00:06:01"
+  },
+  "allowedOrigins": [
+    "https://example.com",
+    "https://admin.example.com"
+  ]
+}

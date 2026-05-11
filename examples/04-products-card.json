@@ -1,0 +1,39 @@
+
+[
+  {
+    "id": "p-001",
+    "title": "Mechanical Keyboard",
+    "description": "75% layout hot-swappable keyboard with RGB backlight and PBT keycaps.",
+    "image": "https://picsum.photos/seed/kb/400/240",
+    "price": 129.99,
+    "tags": ["keyboard", "hardware", "rgb"],
+    "inStock": true
+  },
+  {
+    "id": "p-002",
+    "title": "Ergonomic Mouse",
+    "description": "Vertical ergonomic wireless mouse reduces wrist strain during long coding sessions.",
+    "image": "https://picsum.photos/seed/mouse/400/240",
+    "price": 59.0,
+    "tags": ["mouse", "ergonomic", "wireless"],
+    "inStock": true
+  },
+  {
+    "id": "p-003",
+    "title": "USB-C Hub",
+    "description": "7-in-1 adapter: HDMI 4K / SD / microSD / USB-A x2 / USB-C PD / RJ45.",
+    "image": "https://picsum.photos/seed/hub/400/240",
+    "price": 39.5,
+    "tags": ["adapter", "usb-c"],
+    "inStock": false
+  },
+  {
+    "id": "p-004",
+    "title": "Noise-cancelling Headphones",
+    "description": "Bluetooth 5.3 over-ear headphones with active noise cancellation.",
+    "image": "https://picsum.photos/seed/hp/400/240",
+    "price": 249.0,
+    "tags": ["audio", "bluetooth", "anc"],
+    "inStock": true
+  }
+]

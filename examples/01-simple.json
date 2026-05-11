@@ -1,0 +1,17 @@
+ 
+{
+  "name": "JSON Render",
+  "version": "0.2.0",
+  "enabled": true,
+  "owner": null,
+  "tags": ["vscode", "json", "viewer"],
+  "author": {
+    "name": "myronliu",
+    "email": "myron@example.com"
+  },
+  "stats": {
+    "stars": 128,
+    "forks": 9,
+    "issues": 3
+  }
+}

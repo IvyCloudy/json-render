@@ -1,0 +1,15 @@
+
+[
+  { "month": "2025-01", "sales": 1250, "refund": 120, "profit":  380 },
+  { "month": "2025-02", "sales": 1380, "refund":  95, "profit":  450 },
+  { "month": "2025-03", "sales": 1620, "refund": 140, "profit":  520 },
+  { "month": "2025-04", "sales": 1890, "refund": 180, "profit":  610 },
+  { "month": "2025-05", "sales": 2150, "refund": 160, "profit":  720 },
+  { "month": "2025-06", "sales": 2380, "refund": 200, "profit":  810 },
+  { "month": "2025-07", "sales": 2620, "refund": 220, "profit":  900 },
+  { "month": "2025-08", "sales": 2540, "refund": 210, "profit":  880 },
+  { "month": "2025-09", "sales": 2790, "refund": 230, "profit":  950 },
+  { "month": "2025-10", "sales": 3020, "refund": 250, "profit": 1050 },
+  { "month": "2025-11", "sales": 3280, "refund": 270, "profit": 1140 },
+  { "month": "2025-12", "sales": 3650, "refund": 300, "profit": 1290 }
+]

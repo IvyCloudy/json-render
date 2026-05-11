@@ -1,0 +1,723 @@
+/* ---------- tags ---------- */
+.jr-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  line-height: 1.6;
+}
+.jr-tag-auto {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  font-weight: 600;
+  cursor: help;
+}
+.jr-tag-auto.jr-tag-auto-dim {
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* ---------- alternative view badges ---------- */
+.jr-alt {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 8px;
+  border: 1px dashed var(--vscode-panel-border, rgba(128,128,128,0.4));
+  background: transparent;
+  color: var(--vscode-descriptionForeground);
+  cursor: pointer;
+  line-height: 1.6;
+  font-family: inherit;
+}
+.jr-alt:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,0.15));
+  color: var(--vscode-foreground);
+}
+.jr-alt.jr-alt-active {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border-style: solid;
+  font-weight: 600;
+}
+
+/* ---------- layout ---------- */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+}
+
+.jr-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.jr-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  background: var(--vscode-sideBar-background, transparent);
+  flex-wrap: wrap;
+}
+
+.jr-title {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.jr-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.jr-tab {
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.jr-tab:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,0.15));
+}
+.jr-tab.active {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.jr-search {
+  flex: 1;
+  min-width: 120px;
+  padding: 4px 8px;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 3px;
+  outline: none;
+}
+.jr-search:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+.jr-badge {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.jr-content {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px;
+}
+
+/* ---------- table view ---------- */
+/* 表格外层横向滚动容器：保证整表数据能展示完，窄屏下可横向滚动，宽屏下 min-width:100% 自动铺满 */
+.jr-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+.jr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed; /* 配合 <colgroup> 精确控制列宽 */
+}
+/* 可手动拖动列宽的表格：不再强制 100%，以用户设置的列宽总和为准；窄屏可滚 */
+.jr-table-resizable {
+  width: auto;
+  min-width: 100%;
+}
+.jr-table th, .jr-table td {
+  border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+.jr-table th {
+  background: var(--vscode-editor-inactiveSelectionBackground, rgba(128,128,128,0.15));
+  position: sticky;
+  top: 0;
+}
+/* 序号 # 列：紧凑、居中 */
+.jr-table th.jr-col-index,
+.jr-table td.jr-col-index {
+  text-align: center;
+  padding-left: 4px;
+  padding-right: 4px;
+  color: var(--vscode-descriptionForeground);
+}
+/* 长文本单元格：允许换行 */
+.jr-table td.jr-td-long {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.jr-table td input.jr-cell-input,
+.jr-table td input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  text-overflow: ellipsis;
+}
+/* 长文本 textarea：自动换行，垂直可拉伸 */
+.jr-table td textarea.jr-cell-input {
+  width: 100%;
+  min-height: 2.2em;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  resize: vertical;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.jr-table td input:focus,
+.jr-table td textarea.jr-cell-input:focus {
+  background: var(--vscode-input-background);
+  box-shadow: inset 0 0 0 1px var(--vscode-focusBorder);
+}
+/* 表头下方的列过滤器行：紧凑、弱化背景；sticky 让它贴着表头 */
+.jr-table thead .jr-col-filter-row th {
+  background: var(--vscode-editor-background);
+  padding: 3px 4px;
+  position: sticky;
+  top: 28px;
+  font-weight: normal;
+}
+.jr-col-filter {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, rgba(128,128,128,0.3));
+  border-radius: 3px;
+  font: inherit;
+  font-size: 11px;
+  outline: none;
+}
+.jr-col-filter:focus {
+  border-color: var(--vscode-focusBorder);
+}
+.jr-col-filter::placeholder {
+  color: var(--vscode-input-placeholderForeground, rgba(128,128,128,0.6));
+  font-style: italic;
+}
+
+/* ---------- table row actions (操作列) ---------- */
+/* 表头"操作"列 */
+.jr-col-actions {
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+  font-weight: normal;
+}
+/* 行末"操作"单元格：容纳 ➕ 与 🗑 按钮 */
+.jr-cell-actions {
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.jr-cell-actions > button + button {
+  margin-left: 4px;
+}
+.jr-row-add,
+.jr-row-del {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--vscode-descriptionForeground);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  line-height: 1;
+}
+.jr-row-add:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.18));
+  color: var(--vscode-foreground);
+  border-color: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+}
+.jr-row-del:hover {
+  background: var(--vscode-inputValidation-errorBackground, rgba(255, 80, 80, 0.15));
+  color: var(--vscode-errorForeground, #f48771);
+  border-color: var(--vscode-inputValidation-errorBorder, rgba(255, 80, 80, 0.4));
+}
+
+/* 行高拖拽手柄：在"操作"列里以小横条呈现，鼠标按下后拖拽改变整行高度 */
+.jr-row-resizer {
+  display: inline-block;
+  width: 18px;
+  height: 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+  border-radius: 3px;
+  background: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+  cursor: row-resize;
+  opacity: 0.5;
+  transition: opacity 120ms ease;
+}
+.jr-row-resizer:hover {
+  opacity: 1;
+  background: var(--vscode-focusBorder, rgba(120, 180, 255, 0.8));
+}
+.jr-row-resized > td {
+  /* 保持内容顶对齐，允许换行充满行高 */
+  vertical-align: top;
+}
+
+/* 列宽拖拽：th 右侧的小竖条，按下拖动可调整列宽 */
+.jr-th-resizable {
+  position: relative;
+  padding-right: 14px !important; /* 给 resizer 预留空间 */
+}
+.jr-th-label {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.jr-col-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  background: transparent;
+  transition: background-color 120ms ease;
+}
+.jr-col-resizer:hover,
+.jr-col-resizer:active {
+  background: var(--vscode-focusBorder, rgba(120, 180, 255, 0.8));
+}
+
+/* 子表工具栏：空子表时兜底的 Add 按钮 */
+.jr-subtable-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.jr-sub-action {
+  font-size: 11px;
+  padding: 1px 8px;
+}
+
+/* ---------- pagination ---------- */
+.jr-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+.jr-pagination .jr-tab {
+  padding: 2px 8px;
+  min-width: 28px;
+}
+.jr-pagination .jr-tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.jr-page-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--vscode-descriptionForeground);
+}
+.jr-page-input {
+  width: 48px;
+  padding: 2px 6px;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, rgba(128,128,128,0.3));
+  border-radius: 3px;
+  font: inherit;
+  outline: none;
+  text-align: center;
+}
+.jr-page-input:focus {
+  border-color: var(--vscode-focusBorder);
+}
+.jr-page-select {
+  padding: 2px 6px;
+  background: var(--vscode-dropdown-background, var(--vscode-input-background));
+  color: var(--vscode-dropdown-foreground, var(--vscode-input-foreground));
+  border: 1px solid var(--vscode-dropdown-border, var(--vscode-input-border, rgba(128,128,128,0.3)));
+  border-radius: 3px;
+  font: inherit;
+  outline: none;
+}
+
+/* ---------- form view ---------- */
+.jr-form {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: 8px 16px;
+  max-width: 720px;
+}
+.jr-form label {
+  font-weight: 500;
+  align-self: center;
+  color: var(--vscode-descriptionForeground);
+  word-break: break-all;
+}
+.jr-form input, .jr-form textarea, .jr-form select {
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border, rgba(128,128,128,0.3));
+  border-radius: 3px;
+  padding: 4px 8px;
+  font: inherit;
+  outline: none;
+}
+.jr-form input:focus, .jr-form textarea:focus {
+  border-color: var(--vscode-focusBorder);
+}
+/* 长文本输入区：允许换行、可纵向拉伸；字体使用编辑器等宽字体方便阅读 */
+.jr-textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  resize: vertical;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.4;
+  font-family: var(--vscode-editor-font-family, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--vscode-editor-font-size, inherit);
+}
+.jr-form .jr-sub {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  border-radius: 4px;
+}
+.jr-form .jr-sub-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--vscode-symbolIcon-classForeground, inherit);
+}
+
+/* ---------- card view ---------- */
+.jr-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.jr-card {
+  border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: var(--vscode-editorWidget-background, transparent);
+}
+.jr-card-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--vscode-symbolIcon-classForeground, inherit);
+  border-bottom: 1px dashed var(--vscode-panel-border, rgba(128,128,128,0.3));
+  padding-bottom: 4px;
+}
+.jr-card-row {
+  display: flex;
+  gap: 8px;
+  margin: 2px 0;
+  font-size: 12px;
+}
+.jr-card-key {
+  color: var(--vscode-descriptionForeground);
+  min-width: 72px;
+}
+.jr-card-val {
+  word-break: break-all;
+}
+
+/* ---------- empty / error ---------- */
+.jr-empty {
+  opacity: 0.7;
+  padding: 24px;
+  text-align: center;
+}
+.jr-error {
+  color: var(--vscode-errorForeground);
+  padding: 12px;
+  background: var(--vscode-inputValidation-errorBackground, rgba(255,0,0,0.1));
+  border: 1px solid var(--vscode-inputValidation-errorBorder, transparent);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+/* ---------- highlight ---------- */
+mark.jr-hit {
+  background: var(--vscode-editor-findMatchHighlightBackground, #ffe58f);
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+/* ---------- nested table ---------- */
+.jr-nested-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: transparent;
+  border: 1px dashed var(--vscode-panel-border, rgba(128,128,128,0.35));
+  border-radius: 3px;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  max-width: 100%;
+}
+.jr-nested-toggle:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,0.15));
+  border-style: solid;
+}
+.jr-nested-caret {
+  font-size: 10px;
+  opacity: 0.75;
+  width: 10px;
+  display: inline-block;
+  text-align: center;
+}
+.jr-nested-summary {
+  color: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+.jr-nested-hit {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.jr-subrow > td {
+  background: var(--vscode-editor-inactiveSelectionBackground, rgba(128,128,128,0.08));
+  padding: 6px 8px;
+}
+.jr-subcell {
+  border-left: 3px solid var(--vscode-focusBorder, rgba(0,120,212,0.5)) !important;
+}
+.jr-sub-title-inline {
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+}
+.jr-sub-path {
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+.jr-subtable-wrap {
+  display: block;
+}
+.jr-subtable {
+  font-size: 11.5px;
+  background: var(--vscode-editor-background);
+}
+.jr-subtable th {
+  background: var(--vscode-editorWidget-background, rgba(128,128,128,0.12));
+  position: static; /* 嵌套表不 sticky，避免多层吸顶错乱 */
+}
+.jr-show-more {
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+/* ---------- composite view ---------- */
+.jr-composite {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.jr-cmp-section {
+  border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  border-radius: 6px;
+  background: var(--vscode-editorWidget-background, transparent);
+  overflow: hidden;
+}
+.jr-cmp-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--vscode-editor-inactiveSelectionBackground, rgba(128,128,128,0.12));
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+}
+.jr-cmp-title {
+  font-weight: 600;
+  color: var(--vscode-symbolIcon-classForeground, inherit);
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+.jr-cmp-kind {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.jr-cmp-badge {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  margin-left: auto;
+}
+.jr-cmp-body {
+  padding: 10px 12px;
+}
+/* 区块内部的表格顶部栏需要贴近区块边 */
+.jr-cmp-body > div > .jr-pagination {
+  margin-bottom: 0;
+}
+
+/* ---------- submit bar (form view) ---------- */
+.jr-submit-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  background: var(--vscode-editorWidget-background, var(--vscode-editor-background));
+  border-radius: 0 0 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+}
+.jr-submit-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.jr-submit-row + .jr-submit-row {
+  padding-top: 8px;
+  border-top: 1px dashed var(--vscode-panel-border, rgba(128,128,128,0.2));
+}
+.jr-submit-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.jr-submit-btn {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.jr-submit-btn:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground, var(--vscode-button-background));
+}
+.jr-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.jr-submit-btn.jr-submit-secondary {
+  background: var(--vscode-button-secondaryBackground, transparent);
+  color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+  border: 1px solid var(--vscode-button-border, var(--vscode-panel-border, rgba(128,128,128,0.3)));
+}
+.jr-submit-btn.jr-submit-secondary:hover:not(:disabled) {
+  background: var(--vscode-button-secondaryHoverBackground, rgba(128,128,128,0.15));
+}
+.jr-submit-btn.jr-submit-danger {
+  background: var(--vscode-errorForeground, #d13438);
+  color: #fff;
+}
+.jr-submit-btn.jr-submit-danger:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.jr-submit-missing {
+  font-size: 11.5px;
+  color: var(--vscode-errorForeground, #f85149);
+  padding: 2px 4px;
+}
+.jr-submit-endpoint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11.5px;
+  color: var(--vscode-descriptionForeground);
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jr-submit-method {
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.jr-submit-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jr-submit-status {
+  font-size: 11.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.jr-submit-loading {
+  background: var(--vscode-editorInfo-background, rgba(0,120,212,0.15));
+  color: var(--vscode-editorInfo-foreground, inherit);
+}
+.jr-submit-ok {
+  background: rgba(46, 160, 67, 0.18);
+  color: var(--vscode-testing-iconPassed, #2ea043);
+}
+.jr-submit-err {
+  background: rgba(248, 81, 73, 0.18);
+  color: var(--vscode-errorForeground, #f85149);
+}
+.jr-submit-toggle {
+  font-size: 11px;
+}
+.jr-submit-resp {
+  margin: 0;
+  padding: 8px 10px;
+  max-height: 240px;
+  overflow: auto;
+  background: var(--vscode-textCodeBlock-background, rgba(128,128,128,0.1));
+  border: 1px solid var(--vscode-panel-border, rgba(128,128,128,0.3));
+  border-radius: 4px;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

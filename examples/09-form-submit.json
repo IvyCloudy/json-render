@@ -1,0 +1,49 @@
+{
+  "__form": {
+    "submit": [
+      {
+        "label": "Create User",
+        "url": "https://httpbin.org/post",
+        "method": "POST",
+        "headers": {
+          "X-Source": "json-render",
+          "X-User-Id": "{{id}}"
+        },
+        "query": { "role": "{{role}}" },
+        "body": {
+          "name": "{{name}}",
+          "age": "{{age}}",
+          "email": "{{email}}",
+          "active": "{{active}}",
+          "bio": "{{bio}}"
+        },
+        "requiredPaths": ["name", "email"],
+        "confirm": "Submit this user to the server?",
+        "timeoutMs": 15000,
+        "responsePath": "lastResponse",
+        "variant": "primary"
+      },
+      {
+        "label": "Save Draft",
+        "url": "https://httpbin.org/put",
+        "method": "PUT",
+        "variant": "secondary"
+      },
+      {
+        "label": "Delete",
+        "url": "https://httpbin.org/delete",
+        "method": "DELETE",
+        "variant": "danger",
+        "confirm": "Delete this user? This cannot be undone."
+      }
+    ]
+  },
+  "id": "u-1001",
+  "role": "admin",
+  "name": "Alice",
+  "age": 18,
+  "email": "alice@example.com",
+  "active": true,
+  "bio": "A long bio that will be rendered as a textarea because its length exceeds the threshold used by the form view. Edit freely.",
+  "lastResponse": null
+}

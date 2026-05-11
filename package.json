@@ -1,0 +1,137 @@
+{
+  "name": "json-render",
+  "displayName": "JSON Render",
+  "description": "Render JSON / JSONL as rich UI (tree / table / form / chart / card) with two-way editing.",
+  "version": "0.2.0",
+  "publisher": "myronliu",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "json",
+    "jsonl",
+    "ndjson",
+    "viewer",
+    "preview",
+    "render",
+    "form",
+    "schema",
+    "csv"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc",
+    "onLanguage:jsonl",
+    "onLanguage:ndjson"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "jsonl",
+        "aliases": ["JSON Lines", "jsonl"],
+        "extensions": [".jsonl", ".ndjson"]
+      }
+    ],
+    "commands": [
+      {
+        "command": "jsonRender.preview",
+        "title": "JSON Render: Preview Current File",
+        "icon": {
+          "light": "media/icon.svg",
+          "dark": "media/icon.svg"
+        }
+      },
+      {
+        "command": "jsonRender.startMockServer",
+        "title": "JSON Render: Start Mock Server (for testing)"
+      },
+      {
+        "command": "jsonRender.stopMockServer",
+        "title": "JSON Render: Stop Mock Server"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "!activeWebviewPanelId && (resourceLangId == json || resourceLangId == jsonc || resourceLangId == jsonl || resourceLangId == ndjson || resourceExtname == .jsonl || resourceExtname == .ndjson)",
+          "command": "jsonRender.preview",
+          "group": "navigation@1"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceLangId == json || resourceLangId == jsonc || resourceLangId == jsonl || resourceLangId == ndjson",
+          "command": "jsonRender.preview",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "jsonRender.preview",
+          "when": "resourceLangId == json || resourceLangId == jsonc || resourceLangId == jsonl || resourceLangId == ndjson"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "JSON Render",
+      "properties": {
+        "jsonRender.defaultView": {
+          "type": "string",
+          "enum": ["auto", "tree", "table", "form", "chart", "card"],
+          "default": "auto",
+          "description": "View mode. 'auto' picks the best view from data shape; any other value overrides the auto decision."
+        },
+        "jsonRender.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically sync edits from preview back to the source file."
+        },
+        "jsonRender.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "After syncing edits, also save the source file to disk automatically. Disable if you want to review the dirty document manually (Cmd/Ctrl+S)."
+        },
+        "jsonRender.schemaFile": {
+          "type": "string",
+          "default": "",
+          "description": "Optional path (relative to the JSON file) to a JSON Schema used to render the Form view. If empty, look for <name>.schema.json next to the file."
+        },
+        "jsonRender.enableMockServer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Start a local mock HTTP server on http://127.0.0.1:39870 (endpoints: /echo /slow /fail /upload) for offline testing of __form.submit. Recommended to enable only during development."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "compile": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "backend": "node examples/backend/server.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/vscode": "^1.80.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "@textea/json-viewer": "^3.4.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.12.0"
+  }
+}

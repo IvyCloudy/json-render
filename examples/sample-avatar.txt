@@ -1,0 +1,2 @@
+Hello from json-render!
+This is a sample avatar file used by 11-form-submit-advanced.json to test the $file multipart upload feature.
