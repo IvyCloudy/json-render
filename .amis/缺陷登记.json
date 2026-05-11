@@ -1,0 +1,903 @@
+{
+  "type": "form",
+  "api": "/api/defect",
+  "body": [
+    {
+      "type": "fieldset",
+      "title": "缺陷信息",
+      "body": [
+        {
+          "type": "input-text",
+          "name": "summary",
+          "label": "缺陷摘要",
+          "required": true,
+          "placeholder": "请输入",
+          "maxLength": 125,
+          "showCounter": true,
+          "addOn": {
+            "type": "button",
+            "label": "AI 提取摘要",
+            "level": "primary",
+            "id": "u:bbf155dd2f43"
+          },
+          "id": "u:7294d23f7589"
+        },
+        {
+          "type": "editor",
+          "name": "description",
+          "label": "缺陷描述",
+          "required": true,
+          "value": "【前提】\n\n【执行步骤】\n\n【预期结果】\n\n【实际结果】",
+          "options": {
+            "height": 200
+          },
+          "id": "u:941b352e035a"
+        }
+      ],
+      "id": "u:58fc0fba232f"
+    },
+    {
+      "type": "fieldset",
+      "title": "基本信息",
+      "body": [
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "status",
+                      "label": "缺陷状态",
+                      "required": true,
+                      "value": "打开",
+                      "options": [
+                        {
+                          "label": "打开",
+                          "value": "打开"
+                        },
+                        {
+                          "label": "关闭",
+                          "value": "关闭"
+                        },
+                        {
+                          "label": "重新打开",
+                          "value": "重新打开"
+                        }
+                      ],
+                      "id": "u:17c1bca38720"
+                    }
+                  ],
+                  "id": "u:f73e21c29e9f"
+                }
+              ],
+              "id": "u:9de2ae07aead"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "discoverer",
+                      "label": "发现人",
+                      "required": true,
+                      "value": "黄镇海/803718",
+                      "options": [
+                        {
+                          "label": "黄镇海/803718",
+                          "value": "黄镇海/803718"
+                        }
+                      ],
+                      "id": "u:3c96812c8bfe"
+                    }
+                  ],
+                  "id": "u:26e012871cca"
+                }
+              ],
+              "id": "u:e1d699b0ca2b"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "input-date",
+                      "name": "discoverDate",
+                      "label": "发现日期",
+                      "format": "YYYY/MM/DD",
+                      "id": "u:6499912c96cc"
+                    }
+                  ],
+                  "id": "u:47839e565ea7"
+                }
+              ],
+              "id": "u:20952a1ba0c6"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "attribution",
+                      "label": "缺陷归属",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:2578dde8cc5a"
+                    }
+                  ],
+                  "id": "u:716a694bd130"
+                }
+              ],
+              "id": "u:268bebd8beaf"
+            }
+          ],
+          "id": "u:bd36b0d7b7c0"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "assignee",
+                      "label": "责任人",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:41352be2d72b"
+                    }
+                  ],
+                  "id": "u:d644d8e51b63"
+                }
+              ],
+              "id": "u:2d83bcc8bcc1"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "systemProduct",
+                      "label": "所属系统产品",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:ade5e2307dec"
+                    }
+                  ],
+                  "id": "u:c0748582a514"
+                }
+              ],
+              "id": "u:76e4abbd46c7"
+            }
+          ],
+          "id": "u:94ccb585735f"
+        }
+      ],
+      "id": "u:215d59840108"
+    },
+    {
+      "type": "fieldset",
+      "title": "缺陷属性",
+      "body": [
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "severity",
+                      "label": "严重度",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [
+                        {
+                          "label": "1-致命",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2-严重",
+                          "value": "2"
+                        },
+                        {
+                          "label": "3-一般",
+                          "value": "3"
+                        },
+                        {
+                          "label": "4-轻微",
+                          "value": "4"
+                        }
+                      ],
+                      "id": "u:6691faef21ea"
+                    }
+                  ],
+                  "id": "u:f4c8430d7c29"
+                }
+              ],
+              "id": "u:b1fe0a5b4ae9"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "priority",
+                      "label": "优先级",
+                      "required": true,
+                      "value": "2-正常",
+                      "options": [
+                        {
+                          "label": "1-紧急",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2-正常",
+                          "value": "2"
+                        },
+                        {
+                          "label": "3-低",
+                          "value": "3"
+                        }
+                      ],
+                      "id": "u:fb955270d46e"
+                    }
+                  ],
+                  "id": "u:e665435f12f3"
+                }
+              ],
+              "id": "u:ab7a1dce3593"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "reproducible",
+                      "label": "是否可重现",
+                      "required": true,
+                      "value": "1-有规律重现",
+                      "options": [
+                        {
+                          "label": "1-有规律重现",
+                          "value": "1"
+                        },
+                        {
+                          "label": "2-偶尔重现",
+                          "value": "2"
+                        },
+                        {
+                          "label": "3-无法重现",
+                          "value": "3"
+                        }
+                      ],
+                      "id": "u:59cc5a4c8075"
+                    }
+                  ],
+                  "id": "u:42462f2b52cd"
+                }
+              ],
+              "id": "u:b67175510071"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "recurring",
+                      "label": "是否反复发生",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:40ca138df43f"
+                    }
+                  ],
+                  "id": "u:9ff50aa1b181"
+                }
+              ],
+              "id": "u:a7a95736e636"
+            }
+          ],
+          "id": "u:937610f4bd12"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "defectType",
+                      "label": "缺陷类型",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:89431b3855bd"
+                    }
+                  ],
+                  "id": "u:8ab7c47a4bfa"
+                }
+              ],
+              "id": "u:1fa7cb66c795"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "testTask",
+                      "label": "测试任务",
+                      "value": "TT2020020001",
+                      "options": [
+                        {
+                          "label": "TT2020020001",
+                          "value": "TT2020020001"
+                        }
+                      ],
+                      "id": "u:ce750b4bd068"
+                    }
+                  ],
+                  "id": "u:ae32305f8f62"
+                }
+              ],
+              "id": "u:2447ae860a82"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "discoverPhase",
+                      "label": "发现阶段",
+                      "value": "ST 阶段",
+                      "options": [
+                        {
+                          "label": "ST 阶段",
+                          "value": "ST"
+                        },
+                        {
+                          "label": "SIT 阶段",
+                          "value": "SIT"
+                        },
+                        {
+                          "label": "UAT 阶段",
+                          "value": "UAT"
+                        }
+                      ],
+                      "id": "u:bbf34317524b"
+                    }
+                  ],
+                  "id": "u:1069177d0e76"
+                }
+              ],
+              "id": "u:7ff09e30b927"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "discoverRound",
+                      "label": "发现轮次",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:cf107cea7c11"
+                    }
+                  ],
+                  "id": "u:f69a65153004"
+                }
+              ],
+              "id": "u:9fe6d30a7954"
+            }
+          ],
+          "id": "u:4bc4d681620c"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "discoverActivity",
+                      "label": "发现活动",
+                      "required": true,
+                      "value": "ST 测试执行",
+                      "options": [
+                        {
+                          "label": "ST 测试执行",
+                          "value": "ST 测试执行"
+                        }
+                      ],
+                      "id": "u:39647e853d92",
+                      "multiple": false
+                    }
+                  ],
+                  "id": "u:4e2301d72d0e"
+                }
+              ],
+              "id": "u:085225aa78b7"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "module",
+                      "label": "所属模块",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "searchable": true,
+                      "options": [],
+                      "id": "u:0beb3fade223"
+                    }
+                  ],
+                  "id": "u:b4ae1783cb8f"
+                }
+              ],
+              "id": "u:26c82370c906"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "businessProduct",
+                      "label": "所属业务产品",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "searchable": true,
+                      "options": [],
+                      "id": "u:dd8b997daa9b"
+                    }
+                  ],
+                  "id": "u:95e20fb5f2ee"
+                }
+              ],
+              "id": "u:9ddf2271c3fa"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "usabilityTest",
+                      "label": "可用性测试",
+                      "value": "否",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:1ffbcf744463"
+                    }
+                  ],
+                  "id": "u:a063e79fa42c"
+                }
+              ],
+              "id": "u:6703de3be45f"
+            }
+          ],
+          "id": "u:3f0f74c6d459"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "precisionTest",
+                      "label": "精准测试",
+                      "required": true,
+                      "value": "否",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:dffb356d8504"
+                    }
+                  ],
+                  "id": "u:a771a323fced"
+                }
+              ],
+              "id": "u:e2d457fff268"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "bottomCase",
+                      "label": "保底案例",
+                      "value": "否",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:561aa5c4dead"
+                    }
+                  ],
+                  "id": "u:88d31e615c61"
+                }
+              ],
+              "id": "u:1c35cc1c87ed"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "logInspection",
+                      "label": "日志巡检",
+                      "value": "否",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:e7812ee450c9"
+                    }
+                  ],
+                  "id": "u:7f8430b8af1e"
+                }
+              ],
+              "id": "u:c0147f04d5aa"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "g01Modification",
+                      "label": "G01 改造",
+                      "required": true,
+                      "value": "否",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:710280abc44a"
+                    }
+                  ],
+                  "id": "u:a5a162965e64"
+                }
+              ],
+              "id": "u:30e30a07b806"
+            }
+          ],
+          "id": "u:9d2ca126af32"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "g01Category",
+                      "label": "G01 分类",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:159123f88299"
+                    }
+                  ],
+                  "id": "u:b16801eb3df7"
+                }
+              ],
+              "id": "u:5ede09e16b80"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "input-text",
+                      "name": "g01CategoryRemark",
+                      "label": "G01 分类备注",
+                      "placeholder": "请输入",
+                      "id": "u:0fd1fa8863f5"
+                    }
+                  ],
+                  "id": "u:f6c29604b34a"
+                }
+              ],
+              "id": "u:f60649688591"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "dbMigrationType",
+                      "label": "数据库迁移类型",
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:f64041d97f16"
+                    }
+                  ],
+                  "id": "u:95dc7ba1408a"
+                }
+              ],
+              "id": "u:ebab0d7c858d"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "input-text",
+                      "name": "newDbVersion",
+                      "label": "新数据库版本号",
+                      "required": true,
+                      "placeholder": "请输入",
+                      "id": "u:0034ca41dfc9"
+                    }
+                  ],
+                  "id": "u:90e56165fe9a"
+                }
+              ],
+              "id": "u:8dd7d86e6d81"
+            }
+          ],
+          "id": "u:a15e64b00dea"
+        },
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "aiDefect",
+                      "label": "AI 缺陷",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [
+                        {
+                          "label": "是",
+                          "value": "yes"
+                        },
+                        {
+                          "label": "否",
+                          "value": "no"
+                        }
+                      ],
+                      "id": "u:dc7497bbcfb4"
+                    }
+                  ],
+                  "id": "u:74f8c5bc299f"
+                }
+              ],
+              "id": "u:a7e1ec887405"
+            }
+          ],
+          "id": "u:0cac66f602ff"
+        }
+      ],
+      "id": "u:1df8f1a89f64"
+    },
+    {
+      "type": "fieldset",
+      "title": "环境信息",
+      "body": [
+        {
+          "type": "grid",
+          "columns": [
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "systemEnvironment",
+                      "label": "系统环境",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [
+                        {
+                          "label": "开发环境",
+                          "value": "dev"
+                        },
+                        {
+                          "label": "测试环境",
+                          "value": "test"
+                        },
+                        {
+                          "label": "生产环境",
+                          "value": "prod"
+                        }
+                      ],
+                      "id": "u:6b66894635dd"
+                    }
+                  ],
+                  "id": "u:0d84406d0d5f"
+                }
+              ],
+              "id": "u:080608563104"
+            },
+            {
+              "body": [
+                {
+                  "type": "container",
+                  "body": [
+                    {
+                      "type": "select",
+                      "name": "platform",
+                      "label": "所属平台",
+                      "required": true,
+                      "placeholder": "请选择",
+                      "options": [],
+                      "id": "u:8f8671b0a0d8"
+                    }
+                  ],
+                  "id": "u:37d7d984c191"
+                }
+              ],
+              "id": "u:161daaa10698"
+            }
+          ],
+          "id": "u:727dcbbcad89"
+        }
+      ],
+      "id": "u:7458be2c6432"
+    },
+    {
+      "type": "fieldset",
+      "title": "其他",
+      "body": [
+        {
+          "type": "select",
+          "name": "tracker",
+          "label": "跟踪人",
+          "value": "叶伟龙/HH02761",
+          "options": [
+            {
+              "label": "叶伟龙/HH02761",
+              "value": "叶伟龙/HH02761"
+            }
+          ],
+          "id": "u:cc1ce67222db"
+        }
+      ],
+      "id": "u:ca8eb10f48c4"
+    },
+    {
+      "type": "fieldset",
+      "title": "添加附件",
+      "body": [
+        {
+          "type": "input-file",
+          "name": "attachments",
+          "label": "",
+          "asBlob": true,
+          "accept": ".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx,.xls,.xlsx",
+          "multiple": true,
+          "drag": true,
+          "description": "你可使用招乎截图功能（默认快捷键：Alt+C）或系统截图工具复制图片至剪贴板，单击本栏位空白处用 (Ctrl+V) 进行上传，或拖拽文件到空白处进行上传。",
+          "id": "u:94f70ac03ad5"
+        }
+      ],
+      "id": "u:04b1f87c47fc"
+    }
+  ],
+  "actions": [
+    {
+      "type": "button",
+      "label": "关闭",
+      "actionType": "close",
+      "id": "u:8aeba75555bd"
+    },
+    {
+      "type": "submit",
+      "label": "保存",
+      "level": "primary",
+      "id": "u:1d33ee00c88b"
+    }
+  ],
+  "id": "u:5c5af88fc91b",
+  "feat": "Insert",
+  "dsType": "api",
+  "labelAlign": "left"
+}

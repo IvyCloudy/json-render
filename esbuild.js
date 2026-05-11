@@ -28,6 +28,7 @@ const webviewConfig = {
   target: 'es2020',
   sourcemap: !production,
   minify: production,
+  keepNames: true,
   loader: { '.css': 'text' },
   define: {
     'process.env.NODE_ENV': production ? '"production"' : '"development"',

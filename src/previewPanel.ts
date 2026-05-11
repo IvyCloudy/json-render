@@ -226,6 +226,11 @@ export class PreviewPanel {
     const headers: Record<string, string> = { ...(msg.headers || {}) };
     let body: string | Buffer | undefined;
 
+    // 打印请求入参
+    console.log(`[HTTP Request] ${method} ${msg.url}`);
+    console.log(`[HTTP Request] Headers:`, headers);
+    console.log(`[HTTP Request] Timeout: ${msg.timeoutMs || 30000}ms`);
+
     if (msg.multipart && (method !== 'GET' && method !== 'HEAD')) {
       // ---- multipart/form-data ----
       try {
@@ -237,6 +242,8 @@ export class PreviewPanel {
             path: path.isAbsolute(f.path) ? f.path : path.resolve(baseDir, f.path),
           })),
         };
+        console.log(`[HTTP Request] Multipart fields:`, normalized.fields);
+        console.log(`[HTTP Request] Multipart files:`, normalized.files.map(f => f.path));
         const built = await buildMultipart(normalized);
         body = built.body;
         // 覆盖 content-type（带边界）
@@ -260,6 +267,7 @@ export class PreviewPanel {
       if (!Object.keys(headers).some((k) => k.toLowerCase() === 'content-type')) {
         headers['Content-Type'] = 'application/json';
       }
+      console.log(`[HTTP Request] Body:`, body);
     }
 
     const timeoutMs = msg.timeoutMs && msg.timeoutMs > 0 ? msg.timeoutMs : 30000;
@@ -283,6 +291,11 @@ export class PreviewPanel {
       try {
         res.headers?.forEach?.((v: string, k: string) => { respHeaders[k] = v; });
       } catch { /* noop */ }
+      
+      // 打印响应出参
+      console.log(`[HTTP Response] ${res.status} ${res.statusText} (${Date.now() - started}ms)`);
+      console.log(`[HTTP Response] Body:`, typeof parsed === 'string' ? parsed.substring(0, 500) : parsed);
+      
       this.postMessage({
         type: 'httpResponse',
         requestId: msg.requestId,
@@ -295,11 +308,13 @@ export class PreviewPanel {
       });
     } catch (e: any) {
       const aborted = e?.name === 'AbortError';
+      const errorMsg = aborted ? `Timed out after ${timeoutMs}ms` : (e?.message ?? String(e));
+      console.error(`[HTTP Error] ${errorMsg}`);
       this.postMessage({
         type: 'httpResponse',
         requestId: msg.requestId,
         ok: false,
-        error: aborted ? `Timed out after ${timeoutMs}ms` : (e?.message ?? String(e)),
+        error: errorMsg,
         durationMs: Date.now() - started,
       });
     } finally {
@@ -315,13 +330,16 @@ export class PreviewPanel {
 
   private parseDocument(): { ok: true; value: unknown; kind: FileKind } | { ok: false; message: string; raw: string; kind: FileKind } {
     const kind = this.detectKind();
-    const text = this.document.getText();
+    let text = this.document.getText();
     try {
       if (kind === 'jsonl') {
         const { items } = jsonlParse(text);
         return { ok: true, value: items, kind };
       }
       if (text.trim() === '') return { ok: true, value: null, kind };
+      if (this.document.languageId === 'jsonc') {
+        text = stripJsoncComments(text);
+      }
       return { ok: true, value: JSON.parse(text), kind };
     } catch (e: any) {
       return { ok: false, message: e?.message ?? String(e), raw: text, kind };
@@ -520,6 +538,42 @@ function getNonce(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 32; i++) t += chars.charAt(Math.floor(Math.random() * chars.length));
   return t;
+}
+
+/**
+ * Strip // and block comments from JSONC text, returning pure JSON.
+ * Simple state machine: skips string contents, recognizes // and block comments and replaces them with spaces.
+ */
+function stripJsoncComments(text: string): string {
+  let result = '';
+  let i = 0;
+  const len = text.length;
+  while (i < len) {
+    if (text[i] === '/' && text[i + 1] === '/') {
+      i += 2;
+      while (i < len && text[i] !== '\n') i++;
+      result += ' ';
+    } else if (text[i] === '/' && text[i + 1] === '*') {
+      i += 2;
+      while (i < len && !(text[i] === '*' && text[i + 1] === '/')) i++;
+      i += 2;
+      result += ' ';
+    } else if (text[i] === '"' || text[i] === "'") {
+      const quote = text[i];
+      result += text[i];
+      i++;
+      while (i < len && text[i] !== quote) {
+        if (text[i] === '\\') { result += text[i]; i++; }
+        result += text[i];
+        i++;
+      }
+      if (i < len) { result += text[i]; i++; }
+    } else {
+      result += text[i];
+      i++;
+    }
+  }
+  return result;
 }
 
 /** 构造 multipart/form-data body（纯 Buffer 拼接，无依赖） */
