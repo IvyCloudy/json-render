@@ -3,7 +3,9 @@ import { ViewProps, setByPath, coerce, matchSearch, Highlight } from './viewUtil
 import { SchemaForm, JsonSchema } from './SchemaForm';
 import { AntdFormView } from './AntdFormView';
 import { useVSCodeBridge } from '../hooks/useVSCodeBridge';
-import { SubmitBar, FORM_META_KEY, readSubmitConfig } from './SubmitBar';
+import { SubmitBar } from './SubmitBar';
+import { FORM_META_KEY, FORM_CONFIG_KEY, FORM_DATA_KEY, hasFormConfig as checkFormConfig } from './formConfigTypes';
+import { readSubmitConfig } from './SubmitBar';
 
 /**
  * 表单视图：
@@ -12,8 +14,7 @@ import { SubmitBar, FORM_META_KEY, readSubmitConfig } from './SubmitBar';
  *  - 若 JSON 根下声明 __form.submit，底部会出现提交按钮
  */
 function hasFormConfig(data: unknown): boolean {
-  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
-  return Array.isArray((data as any).formConfig);
+  return checkFormConfig(data);
 }
 
 export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
@@ -67,11 +68,14 @@ export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
   );
 };
 
-/** 在渲染层隐藏 __form 键，但不从原始数据中删除 */
+/** 在渲染层隐藏 __form / formConfig / formData 键，但不从原始数据中删除 */
 function stripFormMeta(data: unknown): unknown {
-  if (data && typeof data === 'object' && !Array.isArray(data) && FORM_META_KEY in (data as any)) {
-    const { [FORM_META_KEY]: _drop, ...rest } = data as Record<string, unknown>;
-    return rest;
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const obj = data as Record<string, unknown>;
+    if (FORM_META_KEY in obj || FORM_CONFIG_KEY in obj || FORM_DATA_KEY in obj) {
+      const { [FORM_META_KEY]: _, [FORM_CONFIG_KEY]: __, [FORM_DATA_KEY]: ___, ...rest } = obj;
+      return rest;
+    }
   }
   return data;
 }

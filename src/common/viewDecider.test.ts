@@ -214,4 +214,30 @@ describe('viewDecider', () => {
     });
     expect(r.view).toBe('form');
   });
+
+  // ---------------- formConfig / formData ----------------
+  it('含 formConfig 数组 → Form', () => {
+    const r = decideView({
+      formConfig: [{ keyName: 'name', component: 'Input' }],
+      name: 'Alice',
+    });
+    expect(r.view).toBe('form');
+    expect(r.reason).toMatch(/formConfig/);
+  });
+
+  it('含 formData 对象 → Form', () => {
+    const r = decideView({
+      formData: { name: 'Alice', age: 18 },
+    });
+    expect(r.view).toBe('form');
+    expect(r.reason).toMatch(/formData/);
+  });
+
+  it('formConfig + formData 同时存在 → Form', () => {
+    const r = decideView({
+      formConfig: [{ keyName: 'name', component: 'Input' }],
+      formData: { name: 'Alice' },
+    });
+    expect(r.view).toBe('form');
+  });
 });

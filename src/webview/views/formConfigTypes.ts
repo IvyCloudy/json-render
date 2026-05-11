@@ -1,7 +1,8 @@
 export interface FormConfigItem {
   label: string;
   keyName: string;
-  keyValue: unknown;
+  /** @deprecated Values should come from formData instead. Kept for backward compatibility. */
+  keyValue?: unknown;
   component: AntdComponentName;
   col?: { span: number; offset?: number };
   tooltip?: string;
@@ -10,6 +11,30 @@ export interface FormConfigItem {
   props?: Record<string, unknown>;
   valuePropName?: string;
 }
+
+export function hasFormConfig(data: unknown): boolean {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  return Array.isArray((data as Record<string, unknown>)[FORM_CONFIG_KEY]);
+}
+
+export const FORM_DATA_KEY = 'formData';
+export const FORM_CONFIG_KEY = 'formConfig';
+
+/**
+ * Extract form values from data object.
+ * Priority: formData > root-level fields (backward compat) > keyValue fallback
+ */
+export function getFormData(data: unknown): Record<string, unknown> {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+  const obj = data as Record<string, unknown>;
+  if (obj[FORM_DATA_KEY] && typeof obj[FORM_DATA_KEY] === 'object' && !Array.isArray(obj[FORM_DATA_KEY])) {
+    return obj[FORM_DATA_KEY] as Record<string, unknown>;
+  }
+  const { [FORM_META_KEY]: _, [FORM_CONFIG_KEY]: __, ...rest } = obj;
+  return rest;
+}
+
+export const FORM_META_KEY = '__form';
 
 export type AntdComponentName =
   | 'Input'

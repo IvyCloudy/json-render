@@ -1,0 +1,163 @@
+{
+  "__form": {
+    "submit": [
+      {
+        "label": "Submit",
+        "url": "https://httpbin.org/anything",
+        "method": "POST",
+        "variant": "primary"
+      },
+      {
+        "type": "reset",
+        "label": "Reset",
+        "variant": "secondary",
+        "confirm": "Reset all fields to initial values?"
+      }
+    ]
+  },
+  "formConfig": [
+    {
+      "label": "Checkbox",
+      "keyName": "disabled",
+      "component": "Switch",
+      "col": { "span": 24 },
+      "valuePropName": "checked",
+      "tooltip": "Toggle form disabled state",
+      "props": { "checkedChildren": "Disabled", "unCheckedChildren": "Enabled" }
+    },
+    {
+      "label": "Radio",
+      "keyName": "radio",
+      "component": "Radio.Group",
+      "col": { "span": 24 },
+      "options": [
+        { "label": "Apple", "value": "apple" },
+        { "label": "Pear", "value": "pear" }
+      ]
+    },
+    {
+      "label": "Input",
+      "keyName": "input",
+      "component": "Input",
+      "col": { "span": 24 },
+      "props": { "placeholder": "Enter text" }
+    },
+    {
+      "label": "Select",
+      "keyName": "select",
+      "component": "Select",
+      "col": { "span": 24 },
+      "options": [
+        { "label": "Demo", "value": "demo" },
+        { "label": "Option A", "value": "a" },
+        { "label": "Option B", "value": "b" }
+      ],
+      "props": { "placeholder": "Please select" }
+    },
+    {
+      "label": "TreeSelect",
+      "keyName": "treeSelect",
+      "component": "TreeSelect",
+      "col": { "span": 24 },
+      "props": {
+        "placeholder": "Please select",
+        "treeData": [
+          { "title": "Light", "value": "light", "children": [{ "title": "Bamboo", "value": "bamboo" }] }
+        ]
+      }
+    },
+    {
+      "label": "Cascader",
+      "keyName": "cascader",
+      "component": "Cascader",
+      "col": { "span": 24 },
+      "options": [
+        {
+          "label": "Zhejiang",
+          "value": "zhejiang",
+          "children": [
+            { "label": "Hangzhou", "value": "hangzhou" }
+          ]
+        },
+        {
+          "label": "Jiangsu",
+          "value": "jiangsu",
+          "children": [
+            { "label": "Nanjing", "value": "nanjing" }
+          ]
+        }
+      ],
+      "props": { "placeholder": "Please select" }
+    },
+    {
+      "label": "DatePicker",
+      "keyName": "datePicker",
+      "component": "DatePicker",
+      "col": { "span": 12 },
+      "props": { "placeholder": "Select date", "style": { "width": "100%" } }
+    },
+    {
+      "label": "TimePicker",
+      "keyName": "timePicker",
+      "component": "TimePicker",
+      "col": { "span": 12 },
+      "props": { "placeholder": "Select time", "style": { "width": "100%" } }
+    },
+    {
+      "label": "InputNumber",
+      "keyName": "inputNumber",
+      "component": "InputNumber",
+      "col": { "span": 24 },
+      "props": { "min": 0, "max": 9999, "style": { "width": "100%" } }
+    },
+    {
+      "label": "TextArea",
+      "keyName": "textArea",
+      "component": "Input.TextArea",
+      "col": { "span": 24 },
+      "props": { "rows": 4, "placeholder": "Enter multiple lines of text" }
+    },
+    {
+      "label": "Switch",
+      "keyName": "switch",
+      "component": "Switch",
+      "col": { "span": 24 },
+      "valuePropName": "checked",
+      "props": { "checkedChildren": "ON", "unCheckedChildren": "OFF" }
+    },
+    {
+      "label": "Upload",
+      "keyName": "upload",
+      "component": "Upload",
+      "col": { "span": 24 },
+      "valuePropName": "fileList",
+      "props": { "listType": "picture-card" }
+    },
+    {
+      "label": "Checkbox Group",
+      "keyName": "checkboxGroup",
+      "component": "Checkbox.Group",
+      "col": { "span": 24 },
+      "options": [
+        { "label": "Apple", "value": "apple" },
+        { "label": "Pear", "value": "pear" },
+        { "label": "Orange", "value": "orange" }
+      ]
+    }
+  ],
+  "formData": {
+    "disabled": true,
+    "radio": "apple",
+    "input": "",
+    "select": "demo",
+    "treeSelect": null,
+    "cascader": null,
+    "datePicker": null,
+    "timePicker": null,
+    "inputNumber": 0,
+    "textArea": "",
+    "switch": true,
+    "upload": [],
+    "checkboxGroup": []
+  }
+}

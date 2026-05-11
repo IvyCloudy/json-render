@@ -1,68 +1,7 @@
 {
   "token": "demo-token-xyz",
-  "lastResponse": {
-    "args": {
-      "role": "admin"
-    },
-    "data": "{\"name\":\"Alice\",\"role\":\"admin\",\"age\":18,\"email\":\"alice@example.com\",\"birthday\":\"2005-05-20\",\"active\":true,\"bio\":\"A long bio that will be rendered as a textarea because its length exceeds the threshold used by the form view. Edit freely.\",\"gender\":\"female\",\"id\":\"1\"}",
-    "files": {},
-    "form": {},
-    "headers": {
-      "Accept": "*/*",
-      "Accept-Encoding": "br, gzip, deflate",
-      "Accept-Language": "*",
-      "Authorization": "Bearer demo-token-xyz",
-      "Content-Length": "265",
-      "Content-Type": "application/json",
-      "Host": "httpbin.org",
-      "Sec-Fetch-Mode": "cors",
-      "User-Agent": "node",
-      "X-Amzn-Trace-Id": "Root=1-6a012abe-1c8bd90823db8e8f26436e69",
-      "X-Source": "json-render"
-    },
-    "json": {
-      "active": true,
-      "age": 18,
-      "bio": "A long bio that will be rendered as a textarea because its length exceeds the threshold used by the form view. Edit freely.",
-      "birthday": "2005-05-20",
-      "email": "alice@example.com",
-      "gender": "female",
-      "id": "1",
-      "name": "Alice",
-      "role": "admin"
-    },
-    "method": "POST",
-    "origin": "67.216.198.240",
-    "url": "https://httpbin.org/anything/12345?role=admin"
-  },
-  "lastUpload": {
-    "method": "POST",
-    "fieldCount": 2,
-    "fileCount": 1,
-    "fields": {
-      "note": "Alice's avatar",
-      "tag": "profile"
-    },
-    "files": [
-      {
-        "field": "avatar",
-        "filename": "avatar.txt",
-        "contentType": "text/plain",
-        "size": 134,
-        "preview": "Hello from json-render!.This is a sample avatar file used by 11-form-submit-adva"
-      }
-    ],
-    "redirect": "http://127.0.0.1:39870/view/yylxc5xz",
-    "receivedAt": "2026-04-19T13:08:13.374Z"
-  },
-  "name": "1",
-  "role": "admin",
-  "age": 18,
-  "email": "alice@example.com",
-  "birthday": "2005-05-20",
-  "active": true,
-  "bio": "A long bio that will be rendered as a textarea...",
-  "gender": "female",
+  "lastResponse": {},
+  "lastUpload": {},
   "__form": {
     "auth": {
       "bearer": "{{token}}"
@@ -151,7 +90,6 @@
     {
       "label": "用户名称",
       "keyName": "name",
-      "keyValue": "Alice",
       "component": "Input",
       "col": {
         "span": 12
@@ -175,7 +113,6 @@
     {
       "label": "用户角色",
       "keyName": "role",
-      "keyValue": "admin",
       "component": "Select",
       "col": {
         "span": 12
@@ -207,7 +144,6 @@
     {
       "label": "年龄",
       "keyName": "age",
-      "keyValue": 18,
       "component": "InputNumber",
       "col": {
         "span": 8
@@ -223,7 +159,6 @@
     {
       "label": "账户邮箱",
       "keyName": "email",
-      "keyValue": "alice@example.com",
       "component": "Input",
       "col": {
         "span": 16
@@ -241,7 +176,6 @@
     {
       "label": "出生日期",
       "keyName": "birthday",
-      "keyValue": "2005-05-20",
       "component": "DatePicker",
       "col": {
         "span": 12
@@ -256,7 +190,6 @@
     {
       "label": "账户激活状态",
       "keyName": "active",
-      "keyValue": true,
       "component": "Switch",
       "col": {
         "span": 12
@@ -270,7 +203,6 @@
     {
       "label": "个人简介",
       "keyName": "bio",
-      "keyValue": "A long bio that will be rendered as a textarea...",
       "component": "Input.TextArea",
       "col": {
         "span": 24
@@ -285,7 +217,6 @@
     {
       "label": "性别",
       "keyName": "gender",
-      "keyValue": "female",
       "component": "Radio.Group",
       "col": {
         "span": 24
@@ -309,5 +240,15 @@
         "buttonStyle": "solid"
       }
     }
-  ]
+  ],
+  "formData": {
+    "name": "Alice",
+    "role": "admin",
+    "age": 18,
+    "email": "alice@example.com",
+    "birthday": "2005-05-20",
+    "active": true,
+    "bio": "A long bio that will be rendered as a textarea because its length exceeds the threshold used by the form view. Edit freely.",
+    "gender": "female"
+  }
 }

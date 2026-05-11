@@ -53,7 +53,7 @@ const VIEW_KEY_CANDIDATES = ['__view', '$view', '_render'];
  * 目前包含：
  *   - __form : 表单提交、鉴权等配置（FormView 读取）
  */
-const META_KEYS = ['__form'];
+const META_KEYS = ['__form', 'formConfig', 'formData'];
 
 function isMetaKey(k: string): boolean {
   return META_KEYS.includes(k);
@@ -294,6 +294,16 @@ function decidePrimaryView(
     // 业务数据里一旦声明了 __form，用户意图显然是把整个根对象当作表单编辑。
     if (isPlainObject((data as Record<string, unknown>).__form)) {
       return { view: 'form', reason: 'Has __form → Form' };
+    }
+
+    // P0-5: formConfig（Ant Design 动态表单配置）→ Form
+    if (Array.isArray((data as Record<string, unknown>).formConfig)) {
+      return { view: 'form', reason: 'Has formConfig → Form' };
+    }
+
+    // P0-6: formData（表单数据层，往往搭配 formConfig）→ Form
+    if (isPlainObject((data as Record<string, unknown>).formData)) {
+      return { view: 'form', reason: 'Has formData → Form' };
     }
   }
 

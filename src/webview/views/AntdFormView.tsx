@@ -2,11 +2,9 @@ import React, { useMemo } from 'react';
 import { Form, Row, Col, Input, InputNumber, Select, DatePicker, Switch, Radio, Checkbox, TimePicker, Cascader, TreeSelect, Upload, Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { FormConfigItem, AntdComponentName } from './formConfigTypes';
-import { SubmitBar, FORM_META_KEY } from './SubmitBar';
+import { FormConfigItem, AntdComponentName, FORM_CONFIG_KEY, FORM_DATA_KEY, FORM_META_KEY, getFormData } from './formConfigTypes';
+import { SubmitBar } from './SubmitBar';
 import { useVSCodeBridge } from '../hooks/useVSCodeBridge';
-
-const FORM_CONFIG_KEY = 'formConfig';
 
 interface Props {
   data: unknown;
@@ -35,10 +33,15 @@ function readFormConfig(data: unknown): FormConfigItem[] | null {
   return Array.isArray(config) ? config : null;
 }
 
-function buildInitialValues(config: FormConfigItem[]): Record<string, unknown> {
+function buildInitialValues(config: FormConfigItem[], data: unknown): Record<string, unknown> {
+  const formData = getFormData(data);
   const values: Record<string, unknown> = {};
   for (const item of config) {
-    values[item.keyName] = item.keyValue;
+    if (item.keyName in formData) {
+      values[item.keyName] = formData[item.keyName];
+    } else if (item.keyValue !== undefined) {
+      values[item.keyName] = item.keyValue;
+    }
   }
   return values;
 }
@@ -56,6 +59,11 @@ function convertFormValues(values: Record<string, unknown>, config: FormConfigIt
     }
   }
   return converted;
+}
+
+function hasFormDataKey(data: unknown): boolean {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  return FORM_DATA_KEY in (data as Record<string, unknown>);
 }
 
 const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
@@ -148,8 +156,8 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
 
   const initialValues = useMemo(() => {
     if (!config) return {};
-    return buildInitialValues(config);
-  }, [config]);
+    return buildInitialValues(config, data);
+  }, [config, data]);
 
   if (!config) {
     return <div className="jr-empty">No formConfig found.</div>;
@@ -157,15 +165,19 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
 
   const handleValuesChange = (changedValues: any, allValues: any) => {
     const converted = convertFormValues(allValues, config);
-    const { [FORM_META_KEY]: _meta, [FORM_CONFIG_KEY]: _config, ...rest } = (data as Record<string, unknown>) || {};
-    const nextData = { ...rest, ...converted };
-    if ((data as any)?.[FORM_META_KEY]) {
-      (nextData as any)[FORM_META_KEY] = (data as any)[FORM_META_KEY];
+    const obj = data as Record<string, unknown>;
+    if (hasFormDataKey(data)) {
+      onChange({
+        ...obj,
+        [FORM_DATA_KEY]: { ...(obj[FORM_DATA_KEY] as Record<string, unknown>), ...converted },
+      });
+    } else {
+      const { [FORM_META_KEY]: meta, [FORM_CONFIG_KEY]: cfg, ...rest } = obj;
+      const nextData: Record<string, unknown> = { ...rest, ...converted };
+      if (meta !== undefined) nextData[FORM_META_KEY] = meta;
+      if (cfg !== undefined) nextData[FORM_CONFIG_KEY] = cfg;
+      onChange(nextData);
     }
-    if ((data as any)?.[FORM_CONFIG_KEY]) {
-      (nextData as any)[FORM_CONFIG_KEY] = (data as any)[FORM_CONFIG_KEY];
-    }
-    onChange(nextData);
   };
 
   const hasSubmit = Boolean((data as any)?.[FORM_META_KEY]?.submit);
@@ -196,7 +208,7 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
         <SubmitBar
           data={data}
           onChange={onChange}
-          initialSnapshot={buildInitialValues(config)}
+          initialSnapshot={buildInitialValues(config, data)}
           onReset={() => form.resetFields()}
         />
       )}

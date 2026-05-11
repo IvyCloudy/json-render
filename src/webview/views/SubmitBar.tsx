@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useVSCodeBridge, HttpResponseResult } from '../hooks/useVSCodeBridge';
 import { getByPath, setByPath, parsePathExpr } from './viewUtils';
+import { FORM_META_KEY, FORM_DATA_KEY, FORM_CONFIG_KEY, getFormData } from './formConfigTypes';
 
 /** 内联确认弹窗 */
 const ConfirmDialog: React.FC<{ message: string; onConfirm: () => void; onCancel: () => void }> = ({ message, onConfirm, onCancel }) => (
@@ -55,8 +56,6 @@ export interface FormMeta {
   submit?: SubmitConfig | SubmitConfig[];
 }
 
-export const FORM_META_KEY = '__form';
-
 /** 读取提交配置；同时支持旧的对象与新的数组；非法配置返回 null */
 export function readSubmitConfig(data: unknown): SubmitConfig[] | null {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
@@ -81,14 +80,15 @@ function readAuth(data: unknown): FormAuth | undefined {
 
 /**
  * 把字符串中的 {{path.to.field}} 替换为 data 对应的值。
+ * - 查找路径时，优先从 formData（若存在）取值，再 fallback 到根级
  * - 整个字符串就是一个 {{...}} → 返回原始类型
  * - 否则拼接为字符串
  */
 export function interpolate(input: unknown, data: unknown): unknown {
+  const scope = makeScope(data);
   if (typeof input !== 'string') {
     if (Array.isArray(input)) return input.map((x) => interpolate(x, data));
     if (input && typeof input === 'object') {
-      // 保留 $file 占位符，不递归插值内部的 path（path 一般是绝对路径）
       if (isFilePlaceholder(input)) return input;
       const out: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
@@ -100,15 +100,28 @@ export function interpolate(input: unknown, data: unknown): unknown {
   }
   const WHOLE = /^\s*\{\{\s*([^{}]+?)\s*\}\}\s*$/;
   const m = input.match(WHOLE);
-  if (m) return getByPath(data, m[1].trim());
+  if (m) return getByPath(scope, m[1].trim());
   return input.replace(/\{\{\s*([^{}]+?)\s*\}\}/g, (_all, expr: string) => {
-    const v = getByPath(data, expr.trim());
+    const v = getByPath(scope, expr.trim());
     if (v === undefined || v === null) return '';
     if (typeof v === 'object') {
       try { return JSON.stringify(v); } catch { return String(v); }
     }
     return String(v);
   });
+}
+
+/**
+ * Build interpolation scope: formData fields first, then root-level as fallback.
+ * This means {{name}} resolves to formData.name if it exists, otherwise data.name.
+ */
+function makeScope(data: unknown): Record<string, unknown> {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return data as Record<string, unknown> || {};
+  const obj = data as Record<string, unknown>;
+  if (obj[FORM_DATA_KEY] && typeof obj[FORM_DATA_KEY] === 'object' && !Array.isArray(obj[FORM_DATA_KEY])) {
+    return { ...(obj as Record<string, unknown>), ...(obj[FORM_DATA_KEY] as Record<string, unknown>) };
+  }
+  return obj;
 }
 
 /** `{ "$file": "/abs/path.png", "field": "avatar", "filename": "x.png", "contentType": "image/png" }` */
@@ -141,19 +154,23 @@ function appendQuery(url: string, qs: string): string {
 }
 
 function extractFormConfigValues(data: unknown): Record<string, unknown> {
+  const formData = getFormData(data);
+  if (Object.keys(formData).length > 0) return formData;
   if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
-  const config = (data as any).formConfig;
+  const config = (data as any)[FORM_CONFIG_KEY];
   if (!Array.isArray(config)) return {};
   const values: Record<string, unknown> = {};
   for (const item of config) {
     if (item && typeof item === 'object' && item.keyName) {
-      values[item.keyName] = item.keyValue;
+      if (item.keyValue !== undefined) {
+        values[item.keyName] = item.keyValue;
+      }
     }
   }
   return values;
 }
 
-/** 构造 body：body > bodyPath > 全体（剔除 __form） */
+/** 构造 body：body > bodyPath > 全体（剔除 __form / formConfig / formData） */
 export function buildSubmitBody(data: unknown, cfg: SubmitConfig): unknown {
   if (cfg.body !== undefined) {
     const interpolated = interpolate(cfg.body, data);
@@ -167,9 +184,9 @@ export function buildSubmitBody(data: unknown, cfg: SubmitConfig): unknown {
     }
     return interpolated;
   }
-  if (cfg.bodyPath) return getByPath(data, cfg.bodyPath);
+  if (cfg.bodyPath) return getByPath(makeScope(data), cfg.bodyPath);
   if (data && typeof data === 'object' && !Array.isArray(data)) {
-    const { [FORM_META_KEY]: _drop, ...rest } = data as Record<string, unknown>;
+    const { [FORM_META_KEY]: _, [FORM_CONFIG_KEY]: __, [FORM_DATA_KEY]: ___, ...rest } = data as Record<string, unknown>;
     return rest;
   }
   return data;

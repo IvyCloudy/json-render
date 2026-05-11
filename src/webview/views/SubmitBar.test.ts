@@ -3,8 +3,8 @@ import {
   interpolate,
   buildSubmitBody,
   readSubmitConfig,
-  FORM_META_KEY,
 } from './SubmitBar';
+import { FORM_META_KEY, FORM_DATA_KEY, FORM_CONFIG_KEY } from './formConfigTypes';
 
 describe('SubmitBar · interpolate', () => {
   const data = {
@@ -47,31 +47,97 @@ describe('SubmitBar · interpolate', () => {
     expect(interpolate(false, data)).toBe(false);
     expect(interpolate(null, data)).toBe(null);
   });
+
+  it('prefers formData values over root-level values', () => {
+    const withFormData = {
+      name: 'RootName',
+      age: 30,
+      [FORM_DATA_KEY]: { name: 'FormDataName', age: 18 },
+    };
+    expect(interpolate('{{name}}', withFormData)).toBe('FormDataName');
+    expect(interpolate('{{age}}', withFormData)).toBe(18);
+  });
+
+  it('falls back to root-level when key not in formData', () => {
+    const withFormData = {
+      rootOnly: 'fromRoot',
+      name: 'RootName',
+      [FORM_DATA_KEY]: { name: 'FormDataName' },
+    };
+    expect(interpolate('{{rootOnly}}', withFormData)).toBe('fromRoot');
+    expect(interpolate('{{name}}', withFormData)).toBe('FormDataName');
+  });
+
+  it('works without formData (backward compat)', () => {
+    const noFormData = { name: 'Alice', age: 18 };
+    expect(interpolate('{{name}}', noFormData)).toBe('Alice');
+    expect(interpolate('{{age}}', noFormData)).toBe(18);
+  });
 });
 
 describe('SubmitBar · buildSubmitBody', () => {
-  const data = {
-    [FORM_META_KEY]: { submit: { url: 'x' } },
-    name: 'Alice',
-    age: 18,
-    nested: { x: 1 },
-  };
-
-  it('returns data minus __form by default', () => {
+  it('returns data minus __form/formConfig/formData by default', () => {
+    const data = {
+      [FORM_META_KEY]: { submit: { url: 'x' } },
+      [FORM_CONFIG_KEY]: [{ keyName: 'name', component: 'Input' }],
+      [FORM_DATA_KEY]: { name: 'Alice' },
+      name: 'Alice',
+      age: 18,
+      nested: { x: 1 },
+    };
     expect(buildSubmitBody(data, { url: 'x' })).toEqual({ name: 'Alice', age: 18, nested: { x: 1 } });
   });
 
-  it('honors bodyPath', () => {
+  it('returns data minus __form by default (legacy, no formData)', () => {
+    const data = {
+      [FORM_META_KEY]: { submit: { url: 'x' } },
+      name: 'Alice',
+      age: 18,
+      nested: { x: 1 },
+    };
+    expect(buildSubmitBody(data, { url: 'x' })).toEqual({ name: 'Alice', age: 18, nested: { x: 1 } });
+  });
+
+  it('interpolates with formData scope', () => {
+    const data = {
+      name: 'RootName',
+      [FORM_DATA_KEY]: { name: 'FormDataName', age: 18 },
+    };
+    const out = buildSubmitBody(data, { url: 'x', body: { who: '{{name}}', age: '{{age}}' } });
+    expect(out).toEqual({ who: 'FormDataName', age: 18 });
+  });
+
+  it('honors bodyPath with formData scope', () => {
+    const data = {
+      nested: { x: 1 },
+      [FORM_DATA_KEY]: { name: 'FormDataName' },
+    };
     expect(buildSubmitBody(data, { url: 'x', bodyPath: 'nested' })).toEqual({ x: 1 });
-    expect(buildSubmitBody(data, { url: 'x', bodyPath: 'name' })).toBe('Alice');
   });
 
   it('honors explicit body with interpolation', () => {
+    const data = { name: 'Alice', age: 18 };
     const out = buildSubmitBody(data, { url: 'x', body: { who: '{{name}}', age: '{{age}}' } });
     expect(out).toEqual({ who: 'Alice', age: 18 });
   });
 
+  it('$formConfig:true extracts from formData', () => {
+    const data = {
+      [FORM_CONFIG_KEY]: [{ keyName: 'name', component: 'Input' }],
+      [FORM_DATA_KEY]: { name: 'FDName', role: 'admin' },
+      name: 'RootName',
+    };
+    const out = buildSubmitBody(data, { url: 'x', body: { $formConfig: true, extra: 'val' } });
+    expect(out).toEqual({ name: 'FDName', role: 'admin', extra: 'val' });
+  });
+
   it('body has higher priority than bodyPath', () => {
+    const data = {
+      [FORM_META_KEY]: { submit: { url: 'x' } },
+      name: 'Alice',
+      age: 18,
+      nested: { x: 1 },
+    };
     const out = buildSubmitBody(data, { url: 'x', body: 'literal', bodyPath: 'nested' });
     expect(out).toBe('literal');
   });
