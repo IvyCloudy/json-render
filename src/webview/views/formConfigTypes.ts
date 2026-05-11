@@ -1,3 +1,41 @@
+export interface DataSourceHttpConfig {
+  url: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers?: Record<string, string>;
+  query?: Record<string, unknown>;
+  body?: unknown;
+  timeoutMs?: number;
+}
+
+export interface DataSourceTransform {
+  path?: string;
+  labelField?: string;
+  valueField?: string;
+  disabledField?: string;
+  childrenField?: string;
+}
+
+export interface DataSourceCacheConfig {
+  ttl: number;
+  key?: string;
+}
+
+export interface DataSourceSearchConfig {
+  debounce?: number;
+  minLength?: number;
+}
+
+export interface FormItemDataSource {
+  http: DataSourceHttpConfig;
+  transform?: DataSourceTransform;
+  fallback?: Array<{ label: string; value: unknown; disabled?: boolean }>;
+  cache?: DataSourceCacheConfig;
+  search?: DataSourceSearchConfig;
+  watch?: string[];
+  condition?: string;
+  clearOnWatchChange?: boolean;
+}
+
 export interface FormConfigItem {
   label: string;
   keyName: string;
@@ -10,6 +48,7 @@ export interface FormConfigItem {
   options?: Array<{ label: string; value: unknown }>;
   props?: Record<string, unknown>;
   valuePropName?: string;
+  dataSource?: FormItemDataSource;
 }
 
 export function hasFormConfig(data: unknown): boolean {

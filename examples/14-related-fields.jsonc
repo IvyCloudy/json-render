@@ -1,0 +1,128 @@
+{
+  "__form": {
+    "submit": [
+      {
+        "label": "Submit",
+        "url": "https://httpbin.org/anything",
+        "method": "POST",
+        "variant": "primary",
+        "body": {
+          "$formConfig": true
+        }
+      },
+      {
+        "type": "reset",
+        "label": "Reset",
+        "variant": "secondary",
+        "confirm": "Reset all fields to initial values?"
+      }
+    ]
+  },
+  "formConfig": [
+    {
+      "label": "用户",
+      "keyName": "selectA",
+      "component": "Select",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "placeholder": "请选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/users",
+          "method": "GET"
+        },
+        "transform": {
+          "labelField": "name",
+          "valueField": "id"
+        },
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "文章",
+      "keyName": "selectB",
+      "component": "Select",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "placeholder": "请先选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/posts",
+          "method": "GET",
+          "query": {
+            "userId": "{{selectA}}"
+          }
+        },
+        "transform": {
+          "labelField": "title",
+          "valueField": "id"
+        },
+        "watch": [
+          "selectA"
+        ],
+        "condition": "{{selectA}} != null && {{selectA}} != ''",
+        "clearOnWatchChange": true,
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "评论",
+      "keyName": "selectC",
+      "component": "Select",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "placeholder": "请先选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/posts/{{selectB}}/comments",
+          "method": "GET"
+        },
+        "transform": {
+          "labelField": "body",
+          "valueField": "id"
+        },
+        "watch": [
+          "selectB"
+        ],
+        "condition": "{{selectB}} != null && {{selectB}} != ''",
+        "clearOnWatchChange": true,
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    }
+  ],
+  "formData": {
+    "selectA": 1,
+    "selectB": 1,
+    "selectC": 1
+  }
+}

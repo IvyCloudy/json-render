@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import { Form, Row, Col, Input, InputNumber, Select, DatePicker, Switch, Radio, Checkbox, TimePicker, Cascader, TreeSelect, Upload, Button, Tooltip, Slider, ColorPicker, Rate, Mentions, Transfer, Tree } from 'antd';
+import type { FormInstance } from 'antd';
 import { QuestionCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { FormConfigItem, AntdComponentName, FORM_CONFIG_KEY, FORM_DATA_KEY, FORM_META_KEY, getFormData } from './formConfigTypes';
 import { SubmitBar } from './SubmitBar';
 import { useVSCodeBridge } from '../hooks/useVSCodeBridge';
+import { useDataSource } from '../hooks/useDataSource';
 
 interface Props {
   data: unknown;
@@ -76,7 +78,7 @@ function hasFormDataKey(data: unknown): boolean {
   return FORM_DATA_KEY in (data as Record<string, unknown>);
 }
 
-const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
+const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ item, form }) => {
   const Component = COMPONENT_MAP[item.component];
   if (!Component) return null;
 
@@ -93,13 +95,24 @@ const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
     </span>
   );
 
+  const { httpRequest } = useVSCodeBridge();
+  const { options: dsOptions, loading: dsLoading } = useDataSource(item.dataSource, form, httpRequest);
+
   const componentProps: any = { ...(item.props || {}) };
 
-  if (item.options) {
+  const mergedOptions = item.dataSource
+    ? (dsOptions.length > 0 ? dsOptions : item.options ?? [])
+    : item.options;
+
+  if (dsLoading) {
+    componentProps.loading = true;
+  }
+
+  if (mergedOptions) {
     if (item.component === 'TreeSelect') {
-      componentProps.treeData = item.options;
+      componentProps.treeData = mergedOptions;
     } else {
-      componentProps.options = item.options;
+      componentProps.options = mergedOptions;
     }
   }
 
@@ -145,7 +158,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
         valuePropName="targetKeys"
       >
         <Transfer
-          dataSource={item.options?.map((o) => ({
+          dataSource={mergedOptions?.map((o) => ({
             key: String(o.value),
             title: String(o.label ?? o.value),
           })) ?? []}
@@ -159,7 +172,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem }> = ({ item }) => {
   }
 
   if (item.component === 'Tree') {
-    componentProps.treeData = componentProps.treeData ?? item.options;
+    componentProps.treeData = componentProps.treeData ?? mergedOptions;
     return (
       <Form.Item
         name={item.keyName}
@@ -241,6 +254,14 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
       if (cfg !== undefined) nextData[FORM_CONFIG_KEY] = cfg;
       onChange(nextData);
     }
+
+    for (const changedKey of Object.keys(changedValues)) {
+      for (const item of config) {
+        if (item.dataSource?.watch?.includes(changedKey) && item.dataSource.clearOnWatchChange) {
+          form.setFieldsValue({ [item.keyName]: undefined });
+        }
+      }
+    }
   };
 
   const hasSubmit = Boolean((data as any)?.[FORM_META_KEY]?.submit);
@@ -262,7 +283,7 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
         <Row gutter={[16, 16]}>
           {config.map((item) => (
             <Col key={item.keyName} span={colSpan(item)} offset={colOffset(item)}>
-              <AntdFormItem item={item} />
+              <AntdFormItem item={item} form={form} />
             </Col>
           ))}
         </Row>

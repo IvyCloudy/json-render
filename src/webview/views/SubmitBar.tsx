@@ -129,7 +129,7 @@ function isFilePlaceholder(v: unknown): v is { $file: string; field?: string; fi
   return !!v && typeof v === 'object' && typeof (v as any).$file === 'string';
 }
 
-function buildQueryString(query: Record<string, unknown> | undefined): string {
+export function buildQueryString(query: Record<string, unknown> | undefined): string {
   if (!query) return '';
   const parts: string[] = [];
   for (const [k, v] of Object.entries(query)) {
@@ -148,7 +148,7 @@ function buildQueryString(query: Record<string, unknown> | undefined): string {
   return parts.join('&');
 }
 
-function appendQuery(url: string, qs: string): string {
+export function appendQuery(url: string, qs: string): string {
   if (!qs) return url;
   return url + (url.includes('?') ? '&' : '?') + qs;
 }
