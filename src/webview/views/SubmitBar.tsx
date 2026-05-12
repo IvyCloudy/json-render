@@ -16,6 +16,22 @@ const ConfirmDialog: React.FC<{ message: string; onConfirm: () => void; onCancel
   </div>
 );
 
+/** 响应结果弹窗 */
+const ResponseModal: React.FC<{ result: HttpResponseResult; onClose: () => void }> = ({ result, onClose }) => (
+  <div className="jr-response-overlay" onClick={onClose}>
+    <div className="jr-response-dialog" onClick={(e) => e.stopPropagation()}>
+      <div className="jr-response-header">
+        <h3 className="jr-response-title">HTTP Response</h3>
+        <button type="button" className="jr-response-close" onClick={onClose} title="Close">×</button>
+      </div>
+      <pre className="jr-response-body">{formatResponse(result)}</pre>
+      <div className="jr-response-footer">
+        <button type="button" className="jr-response-close-btn" onClick={onClose}>Close</button>
+      </div>
+    </div>
+  </div>
+);
+
 /**
  * __form 约定（写在 JSON 文件本身）：
  *
@@ -271,7 +287,7 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
   const { httpRequest, openUrl } = useVSCodeBridge();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<HttpResponseResult | null>(null);
-  const [expandResp, setExpandResp] = useState(false);
+  const [showRespModal, setShowRespModal] = useState(false);
   const [missing, setMissing] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<'reset' | 'submit' | null>(null);
 
@@ -335,6 +351,7 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
         timeoutMs: cfg.timeoutMs,
       });
       setResult(resp);
+      setShowRespModal(true);
 
       if (resp.ok) {
         let nextData: unknown = data;
@@ -441,9 +458,9 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
           <button
             type="button"
             className="jr-tab jr-submit-toggle"
-            onClick={() => setExpandResp((v) => !v)}
+            onClick={() => setShowRespModal(true)}
           >
-            {expandResp ? 'Hide response' : 'Show response'}
+            View response
           </button>
         )}
       </div>
@@ -452,10 +469,8 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
           Missing required field{missing.length > 1 ? 's' : ''}: {missing.join(', ')}
         </div>
       )}
-      {result && expandResp && !isReset && (
-        <pre className="jr-submit-resp">
-{formatResponse(result)}
-        </pre>
+      {showRespModal && result && !isReset && (
+        <ResponseModal result={result} onClose={() => setShowRespModal(false)} />
       )}
     </div>
   );
