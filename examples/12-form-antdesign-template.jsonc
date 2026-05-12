@@ -91,6 +91,7 @@
       "label": "用户名称",
       "keyName": "name",
       "component": "Input",
+      "defaultValue": "张三",
       "col": {
         "span": 12
       },
@@ -114,6 +115,7 @@
       "label": "用户角色",
       "keyName": "role",
       "component": "Select",
+      "defaultValue": "developer",
       "col": {
         "span": 12
       },
@@ -145,6 +147,7 @@
       "label": "年龄",
       "keyName": "age",
       "component": "InputNumber",
+      "defaultValue": 25,
       "col": {
         "span": 8
       },
@@ -160,6 +163,7 @@
       "label": "账户邮箱",
       "keyName": "email",
       "component": "Input",
+      "defaultValue": "example@domain.com",
       "col": {
         "span": 16
       },
@@ -177,6 +181,7 @@
       "label": "出生日期",
       "keyName": "birthday",
       "component": "DatePicker",
+      "defaultValue": "1990-01-01",
       "col": {
         "span": 12
       },
@@ -191,6 +196,7 @@
       "label": "账户激活状态",
       "keyName": "active",
       "component": "Switch",
+      "defaultValue": true,
       "col": {
         "span": 12
       },
@@ -204,6 +210,7 @@
       "label": "个人简介",
       "keyName": "bio",
       "component": "Input.TextArea",
+      "defaultValue": "这是一个默认的个人简介",
       "col": {
         "span": 24
       },
@@ -218,6 +225,7 @@
       "label": "性别",
       "keyName": "gender",
       "component": "Radio.Group",
+      "defaultValue": "male",
       "col": {
         "span": 24
       },
@@ -242,13 +250,6 @@
     }
   ],
   "formData": {
-    "name": "Alice",
-    "role": "admin",
-    "age": 18,
-    "email": "alice@example.com",
-    "birthday": "2005-05-20",
-    "active": true,
-    "bio": "A long bio that will be rendered as a textarea because its length exceeds the threshold used by the form view. Edit freely.",
-    "gender": "female"
+    "gender": "male"
   }
 }

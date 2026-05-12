@@ -23,6 +23,7 @@
       "label": "Checkbox",
       "keyName": "disabled",
       "component": "Switch",
+      "defaultValue": true,
       "col": {
         "span": 24
       },
@@ -37,6 +38,7 @@
       "label": "Radio",
       "keyName": "radio",
       "component": "Radio.Group",
+      "defaultValue": "apple",
       "col": {
         "span": 24
       },
@@ -58,6 +60,7 @@
       "label": "Input",
       "keyName": "input",
       "component": "Input",
+      "defaultValue": "Hello World",
       "col": {
         "span": 24
       },
@@ -69,6 +72,7 @@
       "label": "Select",
       "keyName": "select",
       "component": "Select",
+      "defaultValue": "demo",
       "col": {
         "span": 24
       },
@@ -94,6 +98,7 @@
       "label": "TreeSelect",
       "keyName": "treeSelect",
       "component": "TreeSelect",
+      "defaultValue": "light",
       "col": {
         "span": 24
       },
@@ -117,6 +122,10 @@
       "label": "Cascader",
       "keyName": "cascader",
       "component": "Cascader",
+      "defaultValue": [
+        "zhejiang",
+        "hangzhou"
+      ],
       "col": {
         "span": 24
       },
@@ -150,6 +159,7 @@
       "label": "DatePicker",
       "keyName": "datePicker",
       "component": "DatePicker",
+      "defaultValue": "2026-01-01",
       "col": {
         "span": 12
       },
@@ -164,6 +174,7 @@
       "label": "TimePicker",
       "keyName": "timePicker",
       "component": "TimePicker",
+      "defaultValue": "12:00:00",
       "col": {
         "span": 12
       },
@@ -178,6 +189,7 @@
       "label": "InputNumber",
       "keyName": "inputNumber",
       "component": "InputNumber",
+      "defaultValue": 100,
       "col": {
         "span": 24
       },
@@ -193,6 +205,7 @@
       "label": "TextArea",
       "keyName": "textArea",
       "component": "Input.TextArea",
+      "defaultValue": "Default multi-line text content",
       "col": {
         "span": 24
       },
@@ -205,6 +218,7 @@
       "label": "Switch",
       "keyName": "switch",
       "component": "Switch",
+      "defaultValue": true,
       "col": {
         "span": 24
       },
@@ -218,6 +232,7 @@
       "label": "Slider",
       "keyName": "slider",
       "component": "Slider",
+      "defaultValue": 50,
       "col": {
         "span": 24
       },
@@ -235,6 +250,7 @@
       "label": "ColorPicker",
       "keyName": "color",
       "component": "ColorPicker",
+      "defaultValue": "#1677ff",
       "col": {
         "span": 12
       },
@@ -246,6 +262,7 @@
       "label": "Rate",
       "keyName": "rate",
       "component": "Rate",
+      "defaultValue": 4,
       "col": {
         "span": 12
       },
@@ -258,6 +275,7 @@
       "label": "Mentions",
       "keyName": "mentions",
       "component": "Mentions",
+      "defaultValue": "@afc163",
       "col": {
         "span": 24
       },
@@ -284,6 +302,9 @@
       "label": "Checkbox Group",
       "keyName": "checkboxGroup",
       "component": "Checkbox.Group",
+      "defaultValue": [
+        "apple"
+      ],
       "col": {
         "span": 24
       },
@@ -306,6 +327,10 @@
       "label": "Transfer",
       "keyName": "transfer",
       "component": "Transfer",
+      "defaultValue": [
+        "0",
+        "1"
+      ],
       "col": {
         "span": 24
       },
@@ -359,6 +384,9 @@
       "label": "Tree",
       "keyName": "tree",
       "component": "Tree",
+      "defaultValue": [
+        "0-0-0"
+      ],
       "col": {
         "span": 24
       },
@@ -404,6 +432,7 @@
       "label": "Upload",
       "keyName": "upload",
       "component": "Upload",
+      "defaultValue": [],
       "col": {
         "span": 24
       },
@@ -411,7 +440,6 @@
     }
   ],
   "formData": {
-    "disabled": false,
     "radio": "pear",
     "input": "",
     "select": "a",

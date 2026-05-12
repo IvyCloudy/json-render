@@ -47,6 +47,8 @@ function buildInitialValues(config: FormConfigItem[], data: unknown): Record<str
   for (const item of config) {
     if (item.keyName in formData) {
       values[item.keyName] = formData[item.keyName];
+    } else if (item.defaultValue !== undefined) {
+      values[item.keyName] = item.defaultValue;
     } else if (item.keyValue !== undefined) {
       values[item.keyName] = item.keyValue;
     }
@@ -262,11 +264,29 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
         }
       }
     }
+
+    // Restore defaultValue for fields that are not in formData
+    const defaultValues: Record<string, unknown> = {};
+    for (const item of config) {
+      if (item.defaultValue !== undefined && !(item.keyName in getFormData(data))) {
+        defaultValues[item.keyName] = item.defaultValue;
+      }
+    }
+    if (Object.keys(defaultValues).length > 0) {
+      form.setFieldsValue(defaultValues);
+    }
   };
 
   const hasSubmit = Boolean((data as any)?.[FORM_META_KEY]?.submit);
 
-  const colSpan = (item: FormConfigItem) => item.col?.span ?? 24;
+  const colSpan = (item: FormConfigItem) => {
+    if (item.col?.span !== undefined) return item.col.span;
+    const dv = item.defaultValue;
+    const len = typeof dv === 'string' ? dv.length : 0;
+    if (len > 50) return 24;
+    if (len > 20) return 12;
+    return 6;
+  };
   const colOffset = (item: FormConfigItem) => item.col?.offset ?? 0;
 
   return (

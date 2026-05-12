@@ -41,6 +41,8 @@ export interface FormConfigItem {
   keyName: string;
   /** @deprecated Values should come from formData instead. Kept for backward compatibility. */
   keyValue?: unknown;
+  /** Read-only default value for initial rendering. Not affected by form editing. */
+  defaultValue?: unknown;
   component: AntdComponentName;
   col?: { span: number; offset?: number };
   tooltip?: string;

@@ -23,6 +23,7 @@
       "label": "用户",
       "keyName": "selectA",
       "component": "Select",
+      "defaultValue": 1,
       "col": {
         "span": 24
       },
@@ -52,6 +53,7 @@
       "label": "文章",
       "keyName": "selectB",
       "component": "Select",
+      "defaultValue": 1,
       "col": {
         "span": 24
       },
@@ -89,6 +91,7 @@
       "label": "评论",
       "keyName": "selectC",
       "component": "Select",
+      "defaultValue": 1,
       "col": {
         "span": 24
       },
