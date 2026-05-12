@@ -1,0 +1,219 @@
+{
+  "__form": {
+    "submit": [
+      {
+        "label": "Submit",
+        "url": "https://httpbin.org/anything",
+        "method": "POST",
+        "variant": "primary",
+        "body": {
+          "$formConfig": true
+        }
+      },
+      {
+        "type": "reset",
+        "label": "Reset",
+        "variant": "secondary",
+        "confirm": "Reset all fields to initial values?"
+      }
+    ]
+  },
+  "formConfig": [
+    {
+      "label": "用户Id",
+      "keyName": "用户Id",
+      "component": "Select",
+      "defaultValue": 1,
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "placeholder": "请选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/users",
+          "method": "GET"
+        },
+        "transform": {
+          "labelField": "name",
+          "valueField": "id"
+        },
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "用户邮箱",
+      "keyName": "用户邮箱",
+      "component": "Input",
+      "col": {
+        "span": 12
+      },
+      "defaultValue": "example@domain.com",
+      "props": {
+        "placeholder": "请选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/users/{{用户Id}}",
+          "method": "GET"
+        },
+        "watch": [
+          "用户Id"
+        ],
+        "condition": "{{用户Id}}",
+        "clearOnWatchChange": true,
+        "transform": {
+          "path": "$.email"
+        }
+      }
+    },
+    {
+      "label": "文章Id",
+      "keyName": "文章Id",
+      "component": "Select",
+      "defaultValue": 1,
+      "col": {
+        "span": 12
+      },
+      "props": {
+        "placeholder": "请先选择用户",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/posts",
+          "method": "GET",
+          "query": {
+            "userId": "{{用户Id}}"
+          }
+        },
+        "transform": {
+          "labelField": "title",
+          "valueField": "id"
+        },
+        "watch": [
+          "用户Id"
+        ],
+        "condition": "{{用户Id}}",
+        "clearOnWatchChange": true,
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "文章内容",
+      "keyName": "文章内容",
+      "component": "Input.TextArea",
+      "defaultValue": "这是一个文章内容",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "rows": 4,
+        "showCount": true,
+        "maxLength": 500,
+        "placeholder": "请输入详细的文章内容"
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/posts/{{文章Id}}",
+          "method": "GET"
+        },
+        "watch": [
+          "文章Id"
+        ],
+        "condition": "{{文章Id}}",
+        "clearOnWatchChange": true,
+        "transform": {
+          "path": "$.body"
+        }
+      }
+    },
+    {
+      "label": "评论Id",
+      "keyName": "评论Id",
+      "component": "Select",
+      "defaultValue": 1,
+      "props": {
+        "placeholder": "请先选择文章",
+        "showSearch": true
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/posts/{{文章Id}}/comments",
+          "method": "GET"
+        },
+        "transform": {
+          "labelField": "body",
+          "valueField": "id"
+        },
+        "watch": [
+          "文章Id"
+        ],
+        "condition": "{{文章Id}}",
+        "clearOnWatchChange": true,
+        "fallback": [
+          {
+            "label": "加载失败，请刷新重试",
+            "value": "",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "评论内容",
+      "keyName": "评论内容",
+      "component": "Input.TextArea",
+      "defaultValue": "这是一个评论内容",
+      "col": {
+        "span": 24
+      },
+      "props": {
+        "rows": 4,
+        "showCount": true,
+        "maxLength": 500,
+        "placeholder": "请输入详细的评论内容"
+      },
+      "dataSource": {
+        "http": {
+          "url": "https://jsonplaceholder.typicode.com/comments",
+          "method": "GET",
+          "query": {
+            "postId": "{{文章Id}}"
+          }
+        },
+        "watch": [
+          "文章Id"
+        ],
+        "condition": "{{文章Id}}",
+        "clearOnWatchChange": true,
+        "transform": {
+          "path": "$.body"
+        }
+      }
+    }
+  ],
+  "formData": {
+    "用户Id": 3,
+    "用户邮箱": "example@domain.com",
+    "文章Id": 12,
+    "文章内容": "这是一个文章内容",
+    "评论Id": 1,
+    "评论内容": "这是一个评论内容"
+  }
+}
