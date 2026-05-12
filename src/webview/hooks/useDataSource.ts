@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FormInstance } from 'antd';
 import { FormItemDataSource } from '../views/formConfigTypes';
 import { HttpRequestOptions, HttpResponseResult } from '../hooks/useVSCodeBridge';
 import { interpolate, buildQueryString, appendQuery } from '../views/SubmitBar';
-import { getByPath } from '../views/viewUtils';
+import { jsonPath } from '../../common/jsonPath';
 
 interface CacheEntry {
   options: Array<{ label: string; value: unknown; disabled?: boolean }>;
+  value: unknown;
   expiresAt: number;
 }
 
@@ -27,8 +28,8 @@ function getCached(key: string, ttl: number): CacheEntry | null {
   return entry;
 }
 
-function setCache(key: string, options: Array<{ label: string; value: unknown; disabled?: boolean }>, ttl: number): void {
-  cache.set(key, { options, expiresAt: Date.now() + ttl });
+function setCache(key: string, options: Array<{ label: string; value: unknown; disabled?: boolean }>, value: unknown, ttl: number): void {
+  cache.set(key, { options, value, expiresAt: Date.now() + ttl });
 }
 
 function evaluateCondition(condition: string, data: unknown): boolean {
@@ -43,12 +44,22 @@ function evaluateCondition(condition: string, data: unknown): boolean {
   return interpolated !== null && interpolated !== undefined;
 }
 
+/**
+ * 提取响应数据：统一使用 JSONPath 语法（必须以 $ 开头）
+ * 若 path 为空则返回整个 body；若不以 $ 开头则自动补全
+ */
+function extractData(body: unknown, path: string): unknown {
+  if (!path) return body;
+  const normalized = path.startsWith('$') ? path : `$.${path}`;
+  const results = jsonPath(body, normalized);
+  return results.length > 0 ? results[0] : undefined;
+}
+
 function transformResponse(
   body: unknown,
   transform: NonNullable<FormItemDataSource['transform']>,
 ): Array<{ label: string; value: unknown; disabled?: boolean }> {
-  const path = transform.path ?? '';
-  const data = path ? getByPath(body, path) : body;
+  const data = extractData(body, transform.path ?? '');
   if (!Array.isArray(data)) return [];
 
   const labelField = transform.labelField ?? 'label';
@@ -62,30 +73,56 @@ function transformResponse(
   }));
 }
 
+function extractValue(body: unknown, transform: NonNullable<FormItemDataSource['transform']>): unknown {
+  return extractData(body, transform.path ?? '');
+}
+
+const SELECT_LIKE_COMPONENTS = new Set(['Select', 'TreeSelect', 'Cascader', 'Transfer', 'Checkbox.Group', 'Radio.Group']);
+
+/** 请求失败后的重试退避延迟（毫秒） */
+const RETRY_DELAYS = [0, 1000, 3000, 5000, 10000];
+
 export function useDataSource(
   dataSource: FormItemDataSource | undefined,
   form: FormInstance,
   httpRequest: (req: HttpRequestOptions) => Promise<HttpResponseResult>,
-): { options: Array<{ label: string; value: unknown; disabled?: boolean }>; loading: boolean; error: string | null } {
+  componentType?: string,
+): { options: Array<{ label: string; value: unknown; disabled?: boolean }>; loading: boolean; error: string | null; value: unknown } {
   const [options, setOptions] = useState<Array<{ label: string; value: unknown; disabled?: boolean }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [value, setValue] = useState<unknown>(undefined);
   const requestRef = useRef(0);
+  const failureCountRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const watchValues: Record<string, unknown> = {};
-  if (dataSource?.watch) {
+  // 稳定 watchValues 引用，仅在表单值实际变化时重建
+  const watchValues: Record<string, unknown> = useMemo(() => {
+    if (!dataSource?.watch) return {};
+    const result: Record<string, unknown> = {};
     for (const key of dataSource.watch) {
-      watchValues[key] = form.getFieldValue(key);
+      result[key] = form.getFieldValue(key);
     }
-  }
+    return result;
+  }, [dataSource, form, ...((dataSource?.watch ?? []).map((k) => form.getFieldValue(k)))]);
+
+  const effectiveMode = dataSource?.mode ?? (componentType && SELECT_LIKE_COMPONENTS.has(componentType) ? 'options' : 'value');
 
   const fetchData = useCallback(async () => {
     if (!dataSource?.http?.url) return;
 
+    // 清理之前的重试定时器
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
     const currentRequestId = ++requestRef.current;
 
     if (dataSource.condition && !evaluateCondition(dataSource.condition, form.getFieldsValue())) {
+      failureCountRef.current = 0;
       setOptions(dataSource.fallback ?? []);
+      setValue(undefined);
       setError(null);
       return;
     }
@@ -103,7 +140,12 @@ export function useDataSource(
     const cacheKey = generateCacheKey(fullUrl, interpolatedQuery);
     const cached = getCached(cacheKey, ttl);
     if (cached) {
-      setOptions(cached.options);
+      failureCountRef.current = 0;
+      if (effectiveMode === 'options') {
+        setOptions(cached.options);
+      } else {
+        setValue(cached.value);
+      }
       setError(null);
       return;
     }
@@ -123,35 +165,73 @@ export function useDataSource(
       if (currentRequestId !== requestRef.current) return;
 
       if (resp.ok) {
-        const transformed = dataSource.transform
-          ? transformResponse(resp.body, dataSource.transform)
-          : (Array.isArray(resp.body)
-            ? resp.body.map((item: any) => ({ label: String(item.label ?? item.value ?? ''), value: item.value ?? item.label }))
-            : []);
-        setOptions(transformed);
-        setCache(cacheKey, transformed, ttl);
+        failureCountRef.current = 0;
+        if (effectiveMode === 'options' || !dataSource.transform) {
+          const transformed = dataSource.transform
+            ? transformResponse(resp.body, dataSource.transform)
+            : (Array.isArray(resp.body)
+              ? resp.body.map((item: any) => ({ label: String(item.label ?? item.value ?? ''), value: item.value ?? item.label }))
+              : []);
+          setOptions(transformed);
+          setCache(cacheKey, transformed, undefined, ttl);
+        } else {
+          const extracted = dataSource.transform
+            ? extractValue(resp.body, dataSource.transform)
+            : resp.body;
+          setValue(extracted);
+          setCache(cacheKey, [], extracted, ttl);
+        }
       } else {
+        failureCountRef.current = Math.min(failureCountRef.current + 1, RETRY_DELAYS.length - 1);
         setOptions(dataSource.fallback ?? []);
+        setValue(undefined);
         setError(resp.error ?? `HTTP ${resp.status}`);
+        // 失败后退避重试
+        const delay = RETRY_DELAYS[failureCountRef.current];
+        if (delay > 0) {
+          retryTimerRef.current = setTimeout(() => {
+            if (requestRef.current === currentRequestId) {
+              fetchData();
+            }
+          }, delay);
+        }
       }
     } catch (e: any) {
       if (currentRequestId !== requestRef.current) return;
+      failureCountRef.current = Math.min(failureCountRef.current + 1, RETRY_DELAYS.length - 1);
       setOptions(dataSource.fallback ?? []);
+      setValue(undefined);
       setError(e?.message ?? 'Request failed');
+      // 失败后退避重试
+      const delay = RETRY_DELAYS[failureCountRef.current];
+      if (delay > 0) {
+        retryTimerRef.current = setTimeout(() => {
+          if (requestRef.current === currentRequestId) {
+            fetchData();
+          }
+        }, delay);
+      }
     } finally {
       if (currentRequestId === requestRef.current) {
         setLoading(false);
       }
     }
-  }, [dataSource, httpRequest, form, watchValues]);
+  }, [dataSource, httpRequest, form, watchValues, effectiveMode]);
 
   useEffect(() => {
     if (!dataSource?.http?.url) {
       setOptions([]);
+      setValue(undefined);
       return;
     }
     fetchData();
+    return () => {
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+    };
   }, [fetchData, dataSource]);
 
-  return { options, loading, error };
+  return { options, loading, error, value };
 }

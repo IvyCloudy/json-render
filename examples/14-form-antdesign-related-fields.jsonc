@@ -24,9 +24,6 @@
       "keyName": "selectA",
       "component": "Select",
       "defaultValue": 1,
-      "col": {
-        "span": 24
-      },
       "props": {
         "placeholder": "请选择用户",
         "showSearch": true
@@ -76,7 +73,7 @@
         "watch": [
           "selectA"
         ],
-        "condition": "{{selectA}} != null && {{selectA}} != ''",
+        "condition": "{{selectA}}",
         "clearOnWatchChange": true,
         "fallback": [
           {
@@ -92,11 +89,8 @@
       "keyName": "selectC",
       "component": "Select",
       "defaultValue": 1,
-      "col": {
-        "span": 24
-      },
       "props": {
-        "placeholder": "请先选择用户",
+        "placeholder": "请先选择文章",
         "showSearch": true
       },
       "dataSource": {
@@ -111,7 +105,7 @@
         "watch": [
           "selectB"
         ],
-        "condition": "{{selectB}} != null && {{selectB}} != ''",
+        "condition": "{{selectB}}",
         "clearOnWatchChange": true,
         "fallback": [
           {
@@ -125,7 +119,7 @@
   ],
   "formData": {
     "selectA": 1,
-    "selectB": 1,
-    "selectC": 1
+    "selectB": 2,
+    "selectC": 8
   }
 }

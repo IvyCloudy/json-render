@@ -8,6 +8,7 @@ export interface DataSourceHttpConfig {
 }
 
 export interface DataSourceTransform {
+  /** JSONPath 表达式（必须以 $ 开头），用于定位响应体中的数据。例: "$.data.items" */
   path?: string;
   labelField?: string;
   valueField?: string;
@@ -28,6 +29,8 @@ export interface DataSourceSearchConfig {
 export interface FormItemDataSource {
   http: DataSourceHttpConfig;
   transform?: DataSourceTransform;
+  /** 'options'（默认）：将响应转为 Select 下拉选项；'value'：将响应值直接填充到字段 */
+  mode?: 'options' | 'value';
   fallback?: Array<{ label: string; value: unknown; disabled?: boolean }>;
   cache?: DataSourceCacheConfig;
   search?: DataSourceSearchConfig;

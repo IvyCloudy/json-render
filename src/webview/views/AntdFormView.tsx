@@ -98,7 +98,14 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
   );
 
   const { httpRequest } = useVSCodeBridge();
-  const { options: dsOptions, loading: dsLoading } = useDataSource(item.dataSource, form, httpRequest);
+  const { options: dsOptions, loading: dsLoading, value: dsValue } = useDataSource(item.dataSource, form, httpRequest, item.component);
+
+  // 当 dataSource 返回 value 模式的数据时，设置到表单字段
+  useEffect(() => {
+    if (dsValue !== undefined && item.dataSource?.mode === 'value') {
+      form.setFieldsValue({ [item.keyName]: dsValue });
+    }
+  }, [dsValue, item.keyName, item.dataSource, form]);
 
   const componentProps: any = { ...(item.props || {}) };
 
@@ -126,6 +133,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
         rules={rules}
         valuePropName="fileList"
         getValueFromEvent={(e: any) => e.fileList}
+        style={{ marginBottom: 8 }}
       >
         <Upload {...componentProps}>
           <Button icon={<ReloadOutlined />}>Upload</Button>
@@ -145,6 +153,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
           if (typeof value === 'string') return value;
           return value?.toHexString?.() ?? value;
         }}
+        style={{ marginBottom: 8 }}
       >
         <ColorPicker {...componentProps} />
       </Form.Item>
@@ -158,6 +167,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
         label={label}
         rules={rules}
         valuePropName="targetKeys"
+        style={{ marginBottom: 8 }}
       >
         <Transfer
           dataSource={mergedOptions?.map((o) => ({
@@ -181,6 +191,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
         label={label}
         rules={rules}
         valuePropName={item.valuePropName ?? 'checkedKeys'}
+        style={{ marginBottom: 8 }}
       >
         <Tree checkable {...componentProps} />
       </Form.Item>
@@ -209,6 +220,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
           }
           return value;
         }}
+        style={{ marginBottom: 8 }}
       >
         <Component {...componentProps} />
       </Form.Item>
@@ -221,6 +233,7 @@ const AntdFormItem: React.FC<{ item: FormConfigItem; form: FormInstance }> = ({ 
       label={label}
       rules={rules}
       valuePropName={item.valuePropName}
+      style={{ marginBottom: 8 }}
     >
       <Component {...componentProps} />
     </Form.Item>
@@ -257,12 +270,25 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
       onChange(nextData);
     }
 
-    for (const changedKey of Object.keys(changedValues)) {
+    // 递归清理所有依赖链上的字段
+    const keysToClear = new Set<string>();
+    const collectDependents = (key: string) => {
       for (const item of config) {
-        if (item.dataSource?.watch?.includes(changedKey) && item.dataSource.clearOnWatchChange) {
-          form.setFieldsValue({ [item.keyName]: undefined });
+        if (item.dataSource?.watch?.includes(key) && item.dataSource.clearOnWatchChange && !keysToClear.has(item.keyName)) {
+          keysToClear.add(item.keyName);
+          collectDependents(item.keyName); // 递归清理间接依赖
         }
       }
+    };
+    for (const changedKey of Object.keys(changedValues)) {
+      collectDependents(changedKey);
+    }
+    if (keysToClear.size > 0) {
+      const clearValues: Record<string, undefined> = {};
+      for (const key of keysToClear) {
+        clearValues[key] = undefined;
+      }
+      form.setFieldsValue(clearValues);
     }
 
     // Restore defaultValue for fields that are not in formData
@@ -300,7 +326,7 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
         onValuesChange={handleValuesChange}
         style={{ padding: '16px' }}
       >
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 8]}>
           {config.map((item) => (
             <Col key={item.keyName} span={colSpan(item)} offset={colOffset(item)}>
               <AntdFormItem item={item} form={form} />
