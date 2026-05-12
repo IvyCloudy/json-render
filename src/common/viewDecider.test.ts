@@ -12,10 +12,6 @@ describe('viewDecider', () => {
     expect(decideView([{ a: 1 }], { fileKind: 'jsonl' }).view).toBe('table');
   });
 
-  it('带外部 Schema 且根是对象 → Form', () => {
-    expect(decideView({ a: 1 }, { hasSchema: true }).view).toBe('form');
-  });
-
   it('数据内嵌 __view 字段显式指定', () => {
     expect(decideView({ __view: 'chart', x: 1 }).view).toBe('chart');
     expect(decideView({ __view: 'card', x: 1 }).view).toBe('card');
@@ -23,10 +19,6 @@ describe('viewDecider', () => {
 
   it('__view 非法值被忽略，走正常推断', () => {
     expect(decideView({ __view: 'xxx', a: 1, b: 2 }).view).toBe('form');
-  });
-
-  it('内嵌 $schema → Form', () => {
-    expect(decideView({ $schema: 'http://x', a: 1 }).view).toBe('form');
   });
 
   // ---------------- P1 根类型 ----------------

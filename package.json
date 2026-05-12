@@ -96,11 +96,6 @@
           "default": true,
           "description": "After syncing edits, also save the source file to disk automatically. Disable if you want to review the dirty document manually (Cmd/Ctrl+S)."
         },
-        "jsonRender.schemaFile": {
-          "type": "string",
-          "default": "",
-          "description": "Optional path (relative to the JSON file) to a JSON Schema used to render the Form view. If empty, look for <name>.schema.json next to the file."
-        },
         "jsonRender.enableMockServer": {
           "type": "boolean",
           "default": false,

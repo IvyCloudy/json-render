@@ -17,8 +17,6 @@ export type ViewKind = 'tree' | 'table' | 'form' | 'chart' | 'card' | 'composite
 export interface DecideOptions {
   /** 文件类型（JSONL 强制 Table） */
   fileKind?: 'json' | 'jsonl';
-  /** 是否存在外部 JSON Schema */
-  hasSchema?: boolean;
   /** 用户在插件配置里强制的视图（最高优先级，仅用于调试/逃生） */
   override?: ViewKind | '';
   /** 同质数组判断阈值（0~1），默认 0.7 */
@@ -196,7 +194,7 @@ function countNumericColumns(arr: Record<string, unknown>[]): number {
 export function scoreAlternatives(
   data: unknown,
   primary: ViewKind,
-  opts: { hasSchema?: boolean } = {},
+  _opts: { hasSchema?: boolean } = {},
 ): AlternativeView[] {
   const result: AlternativeView[] = [];
   const push = (view: ViewKind, reason: string) => {
@@ -227,10 +225,6 @@ export function scoreAlternatives(
   }
 
   if (isPlainObject(data)) {
-    // 带 schema 的对象，Form 已是主视图；对扁平对象追加 Form 以便从 Tree 切换
-    if (opts.hasSchema && primary !== 'form') {
-      push('form', 'Schema available → Form');
-    }
     // 含数值型数组的对象 → 可用 Chart 呈现
     const numericArrayKey = Object.entries(data).find(
       ([, v]) => Array.isArray(v) && v.length >= 3 && v.every((x) => typeof x === 'number'),
@@ -254,7 +248,7 @@ export function scoreAlternatives(
 
 export function decideView(data: unknown, opts: DecideOptions = {}): DecideResult {
   const primary = decidePrimaryView(data, opts);
-  const alternatives = scoreAlternatives(data, primary.view, { hasSchema: opts.hasSchema });
+  const alternatives = scoreAlternatives(data, primary.view);
   return { ...primary, alternatives };
 }
 
@@ -275,33 +269,22 @@ function decidePrimaryView(
     return { view: 'table', reason: 'JSONL → Table' };
   }
 
-  // P0-2: 带 Schema 的对象 → Form
-  if (opts.hasSchema && isPlainObject(data)) {
-    return { view: 'form', reason: 'JSON Schema → Form' };
-  }
-
-  // P0-3: 显式 __view / $view / _render
+  // P0-2: 显式 __view / $view / _render
   if (isPlainObject(data)) {
     const explicit = readExplicitView(data);
     if (explicit) return { view: explicit, reason: `Explicit "__view": "${explicit}"` };
 
-    // 内嵌 $schema
-    if ('$schema' in data) {
-      return { view: 'form', reason: 'Inline $schema → Form' };
-    }
-
-    // P0-4: 内嵌 __form（表单提交/鉴权配置）→ Form
-    // 业务数据里一旦声明了 __form，用户意图显然是把整个根对象当作表单编辑。
+    // P0-3: 内嵌 __form（表单提交/鉴权配置）→ Form
     if (isPlainObject((data as Record<string, unknown>).__form)) {
       return { view: 'form', reason: 'Has __form → Form' };
     }
 
-    // P0-5: formConfig（Ant Design 动态表单配置）→ Form
+    // P0-4: formConfig（Ant Design 动态表单配置）→ Form
     if (Array.isArray((data as Record<string, unknown>).formConfig)) {
       return { view: 'form', reason: 'Has formConfig → Form' };
     }
 
-    // P0-6: formData（表单数据层，往往搭配 formConfig）→ Form
+    // P0-5: formData（表单数据层，往往搭配 formConfig）→ Form
     if (isPlainObject((data as Record<string, unknown>).formData)) {
       return { view: 'form', reason: 'Has formData → Form' };
     }

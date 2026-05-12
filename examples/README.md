@@ -10,11 +10,13 @@
 | `03-sales-chart.json` | Chart | 月份-销量数组，折线/柱状图 |
 | `04-products-card.json` | Card | 带 `title/description/image` 的卡片展示 |
 | `05-deep-nested.json` | Tree + JSONPath | 深层嵌套，测 `$..author`、`[?(@.price<10)]` 等 |
-| `06-config.json` + `06-config.schema.json` | Form (Schema) | 驱动 Schema 表单：enum、required、description、min/max |
 | `07-huge-array.json` | Table | 200+ 行，测性能与滚动 |
 | `08-edge-cases.json` | Tree | null、空串、布尔、科学计数、转义、unicode、长字符串 |
 | `09-logs.jsonl` | Table (JSONL) | 按行 NDJSON，每行一条日志 |
 | `10-events.ndjson` | Table (JSONL) | `.ndjson` 扩展名测试 |
+| `12-form-antdesign-template.jsonc` | Form (Ant Design) | Ant Design 表单：formConfig + formData + __form.submit |
+| `13-form-antdesign-template.jsonc` | Form (Ant Design) | 全部 19 种 Ant Design 组件演示 |
+| `14-form-antdesign-related-fields.jsonc` | Form (Ant Design) | 级联 Select + dataSource 动态加载 |
 
 ## 快速试用
 

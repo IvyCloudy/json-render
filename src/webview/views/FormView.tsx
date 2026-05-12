@@ -1,28 +1,19 @@
 import React from 'react';
 import { ViewProps, setByPath, coerce, matchSearch, Highlight } from './viewUtils';
-import { SchemaForm, JsonSchema } from './SchemaForm';
 import { AntdFormView } from './AntdFormView';
 import { useVSCodeBridge } from '../hooks/useVSCodeBridge';
 import { SubmitBar } from './SubmitBar';
 import { FORM_META_KEY, FORM_CONFIG_KEY, FORM_DATA_KEY, hasFormConfig as checkFormConfig } from './formConfigTypes';
 import { readSubmitConfig } from './SubmitBar';
 
-/**
- * 表单视图：
- *  - 若提供了 JSON Schema，则按 schema 渲染（带校验、枚举、必填等）
- *  - 否则递归渲染为动态表单
- *  - 若 JSON 根下声明 __form.submit，底部会出现提交按钮
- */
 function hasFormConfig(data: unknown): boolean {
   return checkFormConfig(data);
 }
 
 export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
   const { state } = useVSCodeBridge();
-  const schema = state.schema as JsonSchema | null;
   const hasSubmit = Boolean(readSubmitConfig(data));
 
-  // 记录首次收到的有效 data 作为 reset 快照（深拷贝，避免后续 onChange 改动影响它）
   const snapshotRef = React.useRef<unknown>(undefined);
   React.useEffect(() => {
     if (snapshotRef.current === undefined && data !== undefined && data !== null) {
@@ -30,20 +21,10 @@ export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
       catch { snapshotRef.current = data; }
     }
   }, [data]);
-  // 当文件被切换（fileName 变化）时重置快照
   const fileNameRef = React.useRef<string>(state.fileName);
   if (fileNameRef.current !== state.fileName) {
     fileNameRef.current = state.fileName;
     snapshotRef.current = undefined;
-  }
-
-  if (schema) {
-    return (
-      <div>
-        <SchemaForm data={data} schema={schema} onChange={onChange} />
-        {hasSubmit && <SubmitBar data={data} onChange={onChange} initialSnapshot={snapshotRef.current} />}
-      </div>
-    );
   }
 
   if (hasFormConfig(data)) {
@@ -53,7 +34,6 @@ export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
   if (data === null || typeof data !== 'object') {
     return <div className="jr-empty">Form view requires an object or array.</div>;
   }
-  // 渲染时过滤掉 __form 元数据，避免它被当作业务字段展示 / 被编辑
   const viewData = stripFormMeta(data);
   return (
     <div>
@@ -68,7 +48,6 @@ export const FormView: React.FC<ViewProps> = ({ data, search, onChange }) => {
   );
 };
 
-/** 在渲染层隐藏 __form / formConfig / formData 键，但不从原始数据中删除 */
 function stripFormMeta(data: unknown): unknown {
   if (data && typeof data === 'object' && !Array.isArray(data)) {
     const obj = data as Record<string, unknown>;
@@ -139,7 +118,6 @@ const FormNode: React.FC<NodeProps> = ({ value, path, search, onUpdate }) => {
   );
 };
 
-/** 字符串较长或含换行时改用 textarea，避免单行 input 被截断难以编辑 */
 const LONG_TEXT_THRESHOLD = 80;
 function shouldUseTextarea(v: unknown): v is string {
   if (typeof v !== 'string') return false;

@@ -22,7 +22,6 @@ export interface BridgeState {
   fileKind: FileKind;
   defaultView: string;
   autoSync: boolean;
-  schema: unknown | null;
   parseError?: string;
   rawText?: string;
 }
@@ -61,7 +60,6 @@ export function useVSCodeBridge() {
     fileKind: 'json',
     defaultView: 'tree',
     autoSync: true,
-    schema: null,
   });
   const readyRef = useRef(false);
   const csvListenersRef = useRef<CsvImportListener[]>([]);
@@ -79,7 +77,6 @@ export function useVSCodeBridge() {
           fileKind: msg.fileKind ?? 'json',
           defaultView: msg.defaultView,
           autoSync: msg.autoSync,
-          schema: msg.schema ?? null,
         });
       } else if (msg.type === 'sync') {
         const p = msg.payload as any;
@@ -92,7 +89,6 @@ export function useVSCodeBridge() {
             parseError: undefined,
             rawText: undefined,
             fileKind: msg.fileKind ?? s.fileKind,
-            schema: 'schema' in msg ? msg.schema : s.schema,
           }));
         }
       } else if (msg.type === 'config') {

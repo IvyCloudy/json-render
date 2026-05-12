@@ -34,9 +34,8 @@ type OutboundMessage =
       fileKind: FileKind;
       defaultView: string;
       autoSync: boolean;
-      schema: unknown | null;
     }
-  | { type: 'sync'; payload: unknown; fileKind: FileKind; schema?: unknown | null }
+  | { type: 'sync'; payload: unknown; fileKind: FileKind }
   | { type: 'config'; defaultView: string; autoSync: boolean }
   | { type: 'importCsvResult'; rows: Record<string, string>[] | null; error?: string }
   | {
@@ -356,7 +355,6 @@ export class PreviewPanel {
       });
       return;
     }
-    const schema = await this.loadSchema();
     if (kind === 'init') {
       const cfg = this.readConfig();
       this.postMessage({
@@ -366,10 +364,9 @@ export class PreviewPanel {
         fileKind: parsed.kind,
         defaultView: cfg.defaultView,
         autoSync: cfg.autoSync,
-        schema,
       });
     } else {
-      this.postMessage({ type: 'sync', payload: parsed.value, fileKind: parsed.kind, schema });
+      this.postMessage({ type: 'sync', payload: parsed.value, fileKind: parsed.kind });
     }
   }
 
@@ -420,29 +417,6 @@ export class PreviewPanel {
     }
   }
 
-  private async loadSchema(): Promise<unknown | null> {
-    const cfg = this.readConfig();
-    const docUri = this.document.uri;
-    const dir = vscode.Uri.joinPath(docUri, '..');
-    const candidates: vscode.Uri[] = [];
-    if (cfg.schemaFile) {
-      candidates.push(vscode.Uri.joinPath(dir, cfg.schemaFile));
-    } else {
-      const base = path.basename(this.document.fileName).replace(/\.(json|jsonc|jsonl|ndjson)$/i, '');
-      candidates.push(vscode.Uri.joinPath(dir, `${base}.schema.json`));
-      candidates.push(vscode.Uri.joinPath(dir, 'schema.json'));
-    }
-    for (const uri of candidates) {
-      try {
-        const data = await vscode.workspace.fs.readFile(uri);
-        return JSON.parse(Buffer.from(data).toString('utf8'));
-      } catch {
-        /* not found, try next */
-      }
-    }
-    return null;
-  }
-
   private async saveCsv(content: string, suggestedName: string) {
     const dir = vscode.Uri.joinPath(this.document.uri, '..');
     const target = await vscode.window.showSaveDialog({
@@ -488,7 +462,6 @@ export class PreviewPanel {
       defaultView: cfg.get<string>('defaultView', 'tree'),
       autoSync: cfg.get<boolean>('autoSync', true),
       autoSave: cfg.get<boolean>('autoSave', true),
-      schemaFile: cfg.get<string>('schemaFile', ''),
     };
   }
 

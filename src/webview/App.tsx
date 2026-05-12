@@ -74,17 +74,15 @@ export const App: React.FC = () => {
 
   // 自动决策视图：数据/文件类型/Schema/配置项变化时重新计算
   const decision = useMemo(() => {
-    // 解析出错时强制走 Tree 视图（让错误信息优先展示，下面会另行拦截）
     if (state.parseError)
       return { view: 'tree' as ViewKind, reason: 'Parse error', alternatives: [] };
     const cfgOverride =
       state.defaultView && state.defaultView !== 'auto' ? (state.defaultView as ViewKind) : '';
     return decideView(liveData, {
       fileKind: state.fileKind === 'jsonl' ? 'jsonl' : 'json',
-      hasSchema: Boolean(state.schema),
       override: cfgOverride,
     });
-  }, [liveData, state.parseError, state.fileKind, state.schema, state.defaultView]);
+  }, [liveData, state.parseError, state.fileKind, state.defaultView]);
 
   const activeView: ViewKind = override ?? decision.view;
 
@@ -117,7 +115,6 @@ export const App: React.FC = () => {
     <div className="jr-app">
       <div className="jr-toolbar">
         {state.fileKind === 'jsonl' && <span className="jr-tag">JSONL</span>}
-        {Boolean(state.schema) && <span className="jr-tag">Schema</span>}
         <span
           className={`jr-tag jr-tag-auto${override ? ' jr-tag-auto-dim' : ''}`}
           title={
