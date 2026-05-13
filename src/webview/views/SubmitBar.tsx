@@ -589,22 +589,6 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
           {iconPrefix}
           {label}
         </button>
-        {!isReset && (
-          <span className="jr-submit-endpoint" title={previewUrl}>
-            <span className="jr-submit-method">{method}</span>
-            <span className="jr-submit-url">{previewUrl}</span>
-          </span>
-        )}
-        {statusTag}
-        {result && !isReset && (
-          <button
-            type="button"
-            className="jr-tab jr-submit-toggle"
-            onClick={() => setShowRespModal(true)}
-          >
-            View response
-          </button>
-        )}
       </div>
       {missing.length > 0 && (
         <div className="jr-submit-missing">
