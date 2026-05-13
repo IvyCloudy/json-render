@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useVSCodeBridge, HttpResponseResult } from '../hooks/useVSCodeBridge';
 import { getByPath, setByPath, parsePathExpr } from './viewUtils';
 import { FORM_META_KEY, FORM_DATA_KEY, FORM_CONFIG_KEY, getFormData } from './formConfigTypes';
+import { jsonPath } from '../../common/jsonPath';
 
 /** 内联确认弹窗 */
 const ConfirmDialog: React.FC<{ message: string; onConfirm: () => void; onCancel: () => void }> = ({ message, onConfirm, onCancel }) => (
@@ -37,11 +38,23 @@ const ResponseModal: React.FC<{ result: HttpResponseResult; onClose: () => void 
  *
  * {
  *   "__form": {
- *     "auth": { "bearer": "{{token}}" }, // 可选；自动注入 Authorization: Bearer xxx
+ *     "auth": {
+ *       "bearer": "{{token}}",          // 可选；静态 Bearer token
+ *       "tokenRequest": {               // 可选；提交前先请求 token
+ *         "url": "https://...",
+ *         "method": "POST",
+ *         "headers": {},
+ *         "body": {},
+ *         "timeoutMs": 10000
+ *       }
+ *     },
  *     "submit": [ ... SubmitConfig ... ] // 对象或数组，见下方接口
  *   }
  * }
  *
+ * SubmitConfig.headers 中支持：
+ *   - "$tokenResponse" 特殊 key：其值为 JSONPath，解析后合并字段到 headers
+ *   - "$.xxx" JSONPath 值：从 token 响应中提取指定字段
  * SubmitConfig 所有字段见下。type 为 "reset" 时是客户端重置按钮，不发请求。
  */
 export interface SubmitConfig {
@@ -65,6 +78,13 @@ export interface SubmitConfig {
 
 export interface FormAuth {
   bearer?: string;
+  tokenRequest?: {
+    url: string;
+    method?: string;
+    headers?: Record<string, string>;
+    body?: unknown;
+    timeoutMs?: number;
+  };
 }
 
 export interface FormMeta {
@@ -92,6 +112,100 @@ function readAuth(data: unknown): FormAuth | undefined {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return undefined;
   const meta = (data as any)[FORM_META_KEY] as FormMeta | undefined;
   return meta?.auth;
+}
+
+/** 特殊 key：在 SubmitConfig.headers 中表示将 token 响应合并到 headers */
+const TOKEN_RESPONSE_KEY = '$tokenResponse';
+
+/**
+ * 从 tokenResponse 中用 JSONPath 提取值。
+ * 返回单个值（单匹配）或数组（多匹配）。
+ */
+function resolveJsonPath(expr: string, target: unknown): unknown {
+  if (!expr || typeof expr !== 'string' || !expr.startsWith('$')) return expr;
+  try {
+    const results = jsonPath(target, expr);
+    if (results.length === 0) return undefined;
+    if (results.length === 1) return results[0];
+    return results;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 对字符串中 $ 开头的 JSONPath 表达式进行替换。
+ * 支持纯 JSONPath（整个字符串就是 `$.xxx`）和混合字符串（`Bearer $.token`）。
+ */
+function resolveTokenRefs(raw: string, tokenResponse: unknown): string {
+  if (!tokenResponse || typeof raw !== 'string') return raw;
+  return raw.replace(/\$(?:\.(?:\w+|\*)|\[\d+\]|\[\*\])+/g, (match) => {
+    const v = resolveJsonPath(match, tokenResponse);
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') {
+      try { return JSON.stringify(v); } catch { return String(v); }
+    }
+    return String(v);
+  });
+}
+
+/**
+ * 处理 SubmitConfig.headers：先通过 interpolate 替换 mustache 模板，
+ * 再解析 $tokenResponse 特殊 key 和 $ JSONPath 值。
+ */
+function resolveHeaders(cfgHeaders: Record<string, string> | undefined, data: unknown, tokenResponse: unknown): Record<string, string> {
+  const raw: Record<string, string> = cfgHeaders
+    ? (interpolate(cfgHeaders, data) as Record<string, string>)
+    : {};
+  const out: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(raw)) {
+    if (key === TOKEN_RESPONSE_KEY) {
+      // 若 JSONPath 以 .* 或 [*] 结尾，去掉末尾通配符，定位到父对象再合并其全部字段
+      // 例：$.* → 合并根对象；$.json.* → 合并 tokenResponse.json
+      let mergePath = value;
+      if (mergePath.endsWith('.*')) mergePath = mergePath.slice(0, -2);
+      else if (mergePath.endsWith('[*]')) mergePath = mergePath.slice(0, -3);
+
+      const mergeSource = mergePath === '$' || mergePath === ''
+        ? tokenResponse
+        : resolveJsonPath(mergePath, tokenResponse);
+      if (mergeSource && typeof mergeSource === 'object' && !Array.isArray(mergeSource)) {
+        for (const [rk, rv] of Object.entries(mergeSource as Record<string, unknown>)) {
+          out[rk] = rv === undefined || rv === null ? '' : String(rv);
+        }
+      }
+      continue;
+    }
+    out[key] = resolveTokenRefs(value, tokenResponse);
+  }
+
+  return out;
+}
+
+/**
+ * 对 body 中 $ 开头的 JSONPath 字符串值进行替换（递归处理嵌套对象）。
+ * 应在 interpolate / buildSubmitBody 之后调用。
+ */
+function resolveBodyTokenRefs(body: unknown, tokenResponse: unknown): unknown {
+  if (!tokenResponse) return body;
+  if (body === null || body === undefined) return body;
+  if (Array.isArray(body)) return body.map((item) => resolveBodyTokenRefs(item, tokenResponse));
+  if (typeof body === 'string') return resolveTokenRefs(body, tokenResponse);
+  if (typeof body !== 'object') return body;
+
+  const obj = body as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'string') {
+      out[key] = resolveTokenRefs(value, tokenResponse);
+    } else if (value && typeof value === 'object' && !isFilePlaceholder(value)) {
+      out[key] = resolveBodyTokenRefs(value, tokenResponse);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
 }
 
 /**
@@ -322,11 +436,40 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
     setMissing(miss);
     if (miss.length) return;
 
-    // 合并 auth.bearer → Authorization 头
     const auth = readAuth(data);
-    const headers: Record<string, string> = {
-      ...(interpolate(cfg.headers, data) as Record<string, string> | undefined || {}),
-    };
+
+    // —— 如果配置了 tokenRequest，先请求 token ——
+    let tokenResponse: unknown = undefined;
+    if (auth?.tokenRequest) {
+      const tr = auth.tokenRequest;
+      setLoading(true);
+      try {
+        const tresp = await httpRequest({
+          url: String(interpolate(tr.url, data) ?? ''),
+          method: (tr.method || 'POST').toUpperCase(),
+          headers: interpolate(tr.headers, data) as Record<string, string> | undefined,
+          body: interpolate(tr.body, data),
+          timeoutMs: tr.timeoutMs,
+        });
+        if (!tresp.ok) {
+          setResult(tresp);
+          setShowRespModal(true);
+          return;
+        }
+        tokenResponse = tresp.body;
+      } catch (e: any) {
+        setResult({ ok: false, error: `Token request failed: ${e?.message || e}`, durationMs: 0 });
+        setShowRespModal(true);
+        return;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // —— 构建 headers：先 mustache 模板 → 再 $tokenResponse / $.xxx 解析 ——
+    const headers = resolveHeaders(cfg.headers, data, tokenResponse);
+
+    // 如果没有显式设置 Authorization 头，且 auth.bearer 存在，注入 Bearer
     if (auth?.bearer && !Object.keys(headers).some((k) => k.toLowerCase() === 'authorization')) {
       const token = String(interpolate(auth.bearer, data) ?? '').trim();
       if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -336,7 +479,8 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
       String(interpolate(cfg.url || '', data) ?? ''),
       buildQueryString(interpolate(cfg.query, data) as Record<string, unknown> | undefined),
     );
-    const body = buildSubmitBody(data, cfg);
+    const rawBody = buildSubmitBody(data, cfg);
+    const body = resolveBodyTokenRefs(rawBody, tokenResponse);
     const multipart = method === 'GET' || method === 'HEAD' ? null : extractMultipart(body);
 
     setLoading(true);
@@ -355,7 +499,6 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
 
       if (resp.ok) {
         let nextData: unknown = data;
-        // 1) 写回 responsePath
         if (cfg.responsePath) {
           const segs = parsePathExpr(cfg.responsePath);
           if (segs.length > 0) {
@@ -367,7 +510,6 @@ const SubmitRow: React.FC<RowProps> = ({ data, cfg, onChange, initialSnapshot, o
             onChange(nextData);
           }
         }
-        // 2) openUrl（模板插值以 nextData 为准，能引用刚写回的字段）
         if (cfg.openUrl) {
           const u = String(interpolate(cfg.openUrl, nextData) ?? '').trim();
           if (u) openUrl(u);

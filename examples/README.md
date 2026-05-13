@@ -17,6 +17,7 @@
 | `12-form-antdesign-template.jsonc` | Form (Ant Design) | Ant Design 表单：formConfig + formData + __form.submit |
 | `13-form-antdesign-template.jsonc` | Form (Ant Design) | 全部 19 种 Ant Design 组件演示 |
 | `14-form-antdesign-related-fields.jsonc` | Form (Ant Design) | 级联 Select + dataSource 动态加载 |
+| `16-form-antdesign-dynamic-bearer.jsonc` | Form (Ant Design) | 动态 Token 鉴权 + JSONPath headers/body 解析 |
 
 ## 快速试用
 

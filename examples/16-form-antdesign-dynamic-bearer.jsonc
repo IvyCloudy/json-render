@@ -6,8 +6,8 @@
         "method": "POST",
         "headers": { "X-Auth-Source": "json-render" },
         "body": {
-          "username": "{{username}}",
-          "password": "{{password}}",
+          "username": "1",
+          "password": "2",
           "grant_type": "password"
         },
         "timeoutMs": 10000
@@ -21,11 +21,12 @@
         "variant": "primary",
         "headers": {
           // 表示继承认证接口响应体的所有字段
-          "$tokenResponse": "$.*",
+          "$tokenResponse": "$.json.*",
           // 从认证响应体中提取 json字段 作为 sign-token（jsonPath字符串指定路径）
           "sign-token": "$.json",
           // 业务自定义 header（不会被 $formAuthHeader 覆盖）
-          "X-Request-Source": "form-submit"
+          "X-Request-Source": "form-submit",
+          "password": "overlap"
         },
         "body": {
           "$formConfig": true,

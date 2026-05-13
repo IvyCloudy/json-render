@@ -14,7 +14,7 @@
 - 自动视图决策：根据 JSON 结构智能选择最合适的视图
 - 全局搜索，匹配节点高亮
 - 双向同步：Webview 编辑 → 源文件自动更新；源文件变化 → Webview 刷新
-- HTTP 提交：`__form.submit` 配置发送 HTTP 请求，支持 Bearer 鉴权、multipart 文件上传
+- HTTP 提交：`__form.submit` 配置发送 HTTP 请求，支持 Bearer 鉴权、动态 Token 获取、multipart 文件上传
 - Undo / Redo：JSON 层级历史栈，支持 Ctrl/Cmd+Z / Ctrl/Cmd+Y
 
 ## 安装
@@ -148,11 +148,13 @@ npm run build
 | `keyName` | `string` | ✅ | 对应 `formData` 中的键名 |
 | `component` | `AntdComponentName` | ✅ | 组件类型，见下表 |
 | `col` | `{ span: number; offset?: number }` | ❌ | 栅格布局，`span` 默认 24 |
+| `defaultValue` | `unknown` | ❌ | 只读默认值，仅在 formData 中无该字段时生效 |
 | `tooltip` | `string` | ❌ | 标签旁问号图标提示文案 |
 | `rules` | `Array<Record<string, unknown>>` | ❌ | Ant Design 校验规则 |
-| `options` | `Array<{ label: string; value: unknown }>` | ❌ | Select / Radio.Group / Checkbox.Group / Cascader / Transfer 选项 |
+| `options` | `Array<{ label: string; value: unknown }>` | ❌ | 静态选项（Select / Radio / Checkbox / Cascader / Transfer） |
 | `props` | `Record<string, unknown>` | ❌ | 直接传递给组件的额外属性 |
 | `valuePropName` | `string` | ❌ | 值属性名，Switch 用 `"checked"`，Upload 用 `"fileList"` |
+| `dataSource` | `FormItemDataSource` | ❌ | 远程数据源配置，支持 HTTP 动态获取选项/值（见下方） |
 
 ### 支持的组件类型
 
@@ -293,8 +295,7 @@ npm run build
 
 ```jsonc
 "cache": {
-  "ttl": 60000,                           // 缓存有效期（毫秒）
-  "key": "custom-cache-key"               // 可选，自定义缓存键
+  "ttl": 60000                            // 缓存有效期（毫秒），默认 30000
 }
 ```
 
@@ -315,9 +316,9 @@ npm run build
 | `transform.disabledField` | `string` | options 模式下，数组元素的 disabled 字段名 |
 | `fallback` | `Array<{label, value, disabled?}>` | 请求失败时的降级选项 |
 | `watch` | `string[]` | 监听其他字段变化，触发重新请求 |
-| `condition` | `string` | 触发条件表达式，支持模板插值（推荐直接写 `{{fieldName}}`，字段有值时为真） |
+| `condition` | `string` | 触发条件表达式，支持模板插值（如 `{{fieldName}}`，字段有值时为真） |
 | `clearOnWatchChange` | `boolean` | watch 字段变化时是否清空当前值 |
-| `cache.ttl` | `number` | 缓存有效期（毫秒） |
+| `cache.ttl` | `number` | 缓存有效期（毫秒），默认 30000 |
 
 ### HTTP 提交配置（__form）
 
@@ -326,23 +327,45 @@ npm run build
 ```jsonc
 {
   "__form": {
-    "auth": { "bearer": "{{token}}" },       // 可选，自动注入 Authorization 头
+    "auth": {
+      "bearer": "{{token}}",               // 可选；静态 Bearer token
+      "tokenRequest": {                     // 可选；提交前先请求动态 token
+        "url": "https://auth.example.com/token",
+        "method": "POST",
+        "headers": { "Content-Type": "application/json" },
+        "body": {
+          "username": "{{username}}",
+          "password": "{{password}}",
+          "grant_type": "password"
+        },
+        "timeoutMs": 10000
+      }
+    },
     "submit": [
       {
-        "label": "创建用户",                   // 按钮文案
-        "url": "https://httpbin.org/post",     // 请求地址
-        "method": "POST",                      // HTTP 方法
-        "headers": { "X-Source": "json-render" },  // 额外请求头
-        "query": { "role": "{{role}}" },       // URL 查询参数（支持模板插值）
-        "body": { "name": "{{name}}", "age": "{{age}}" },  // 请求体
-        "requiredPaths": ["name", "email"],    // 提交前校验必填
-        "confirm": "确定提交？",               // 可选，提交前确认弹窗
-        "timeoutMs": 15000,                    // 可选，超时时间
-        "responsePath": "lastResponse",        // 可选，响应数据回写路径
-        "variant": "primary"                   // 按钮样式：primary / secondary / danger
+        "label": "创建用户",
+        "url": "https://httpbin.org/post",
+        "method": "POST",
+        "headers": {
+          // "$tokenResponse" 特殊 key：将其 JSONPath 值定位的对象的所有字段合并到 headers
+          "$tokenResponse": "$.*",          // $.* → 合并 token 响应全部字段；$.json.* → 合并 $.json 子对象
+          "sign-token": "$.json",           // $.xxx → 从 token 响应中用 JSONPath 提取单个字段
+          "X-Source": "json-render"         // 普通字符串（不会被覆盖）
+        },
+        "query": { "role": "{{role}}" },
+        "body": {
+          "$formConfig": true,              // 合并整个 formData 到 body
+          "name": "{{name}}",
+          "sign-token": "$.json"            // body 中同样支持 JSONPath 提取
+        },
+        "requiredPaths": ["name", "email"],
+        "confirm": "确定提交？",
+        "timeoutMs": 15000,
+        "responsePath": "lastResponse",
+        "variant": "primary"
       },
       {
-        "type": "reset",                       // 客户端重置按钮，不发请求
+        "type": "reset",
         "label": "重置",
         "variant": "secondary",
         "confirm": "确定重置所有字段？"
@@ -351,6 +374,36 @@ npm run build
   }
 }
 ```
+
+#### 鉴权方式
+
+| 方式 | 配置 | 说明 |
+|------|------|------|
+| 静态 Bearer | `auth.bearer: "{{token}}"` | 从 formData 中取 token，自动注入 `Authorization: Bearer xxx` 头 |
+| 动态 Token 请求 | `auth.tokenRequest: { ... }` | 提交前先发 HTTP 请求获取 token 响应，token 响应暂存为 `$tokenResponse` |
+
+#### headers 中的特殊处理
+
+| 语法 | 说明 |
+|------|------|
+| `"$tokenResponse": "$.*"` | 将 token 响应对象的所有字段合并到 headers（去除末尾 `.*` 后定位父对象） |
+| `"$tokenResponse": "$.json.*"` | 将 `tokenResponse.json` 的所有字段合并到 headers |
+| `"key": "$.field"` | 从 token 响应中用 JSONPath 提取单个字段值 |
+| `"key": "Bearer $.token"` | 混合字符串：`$.token` 部分会被替换为 JSONPath 解析结果 |
+| `{{keyName}}` | 从 formData 中取值的 mustache 模板 |
+
+#### body 中的 JSONPath 解析
+
+body 中也可以使用 `$.xxx` JSONPath 表达式引用 token 响应中的字段，例如：
+
+```jsonc
+"body": {
+  "$formConfig": true,
+  "auth_payload": "$.json"        // 从 token 响应中提取 json 字段
+}
+```
+
+#### 其他配置
 
 **模板插值** — `url`、`headers` 值、`query` 值、`body` 值中的 `{{keyName}}` 会从 `formData` 中取值，找不到则从根级取值。
 
@@ -365,6 +418,8 @@ npm run build
 ```
 
 **`bodyPath`** — 用 JSON 路径指定 body 来源，如 `"bodyPath": "nested.field"` 只发送该路径的值。
+
+参见完整示例：`examples/16-form-antdesign-dynamic-bearer.jsonc`。
 
 ### 模板插值作用域
 
@@ -410,14 +465,17 @@ json-render/
 │   ├── 02-users-table.json       # 对象数组 → 表格
 │   ├── 03-sales-chart.json       # 数值数据 → 图表
 │   ├── 04-products-card.json     # 卡片展示
-│   ├── 05-deep-nested.json      # 深层嵌套 + JSONPath
+│   ├── 05-deep-nested.json       # 深层嵌套 + JSONPath
 │   ├── 07-huge-array.json        # 200+ 行性能测试
 │   ├── 08-edge-cases.json        # 边界情况
 │   ├── 09-logs.jsonl             # JSONL 日志
 │   ├── 10-events.ndjson          # NDJSON 事件流
-│   ├── 12-form-antdesign-template.jsonc  # Ant Design 动态表单完整示例
-│   ├── 13-form-antdesign-template.jsonc  # 全组件类型示例（19 种组件）
-│   └── 14-form-antdesign-related-fields.jsonc  # 级联 Select + dataSource 动态加载
+│   ├── 12-form-antdesign-template.jsonc   # Ant Design 表单基础示例
+│   ├── 13-form-antdesign-template.jsonc   # 全 19 种组件类型示例
+│   ├── 14-form-antdesign-related-fields.jsonc  # 级联 Select + dataSource 动态加载
+│   ├── 16-form-antdesign-dynamic-bearer.jsonc  # 动态 Token 鉴权 + JSONPath headers
+│   ├── sample-avatar.txt         # 上传测试用文件
+│   └── data.csv                  # CSV 导入测试数据
 ├── media/                        # 图标等资源
 ├── dist/                          # 构建输出
 └── esbuild.js                     # 构建配置
