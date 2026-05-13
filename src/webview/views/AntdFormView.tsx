@@ -305,22 +305,27 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
 
   const hasSubmit = Boolean((data as any)?.[FORM_META_KEY]?.submit);
 
-  const colSpan = (item: FormConfigItem) => {
-    if (item.col?.span !== undefined) return item.col.span;
+  const colProps = (item: FormConfigItem) => {
+    const isTextArea = item.component === 'Input.TextArea';
     const dv = item.defaultValue;
     const len = typeof dv === 'string' ? dv.length : 0;
-    if (len > 50) return 24;
-    if (len > 20) return 12;
-    return 6;
+    const baseSpan = isTextArea ? 24 : len > 50 ? 24 : len > 20 ? 12 : 8;
+    return {
+      xs: 24,
+      sm: isTextArea ? 24 : baseSpan >= 12 ? 12 : 8,
+      md: isTextArea ? 24 : baseSpan >= 12 ? 12 : 8,
+      lg: isTextArea ? 24 : baseSpan,
+      xl: isTextArea ? 24 : baseSpan,
+      offset: item.col?.offset ?? 0,
+    };
   };
-  const colOffset = (item: FormConfigItem) => item.col?.offset ?? 0;
 
   return (
     <div>
       <Form
         form={form}
         layout="horizontal"
-        labelCol={{ style: { width: '120px', flex: '0 0 120px' } }}
+        labelCol={{ style: { width: '100px', flex: '0 0 100px' } }}
         wrapperCol={{ flex: '1' }}
         initialValues={initialValues}
         onValuesChange={handleValuesChange}
@@ -328,7 +333,7 @@ export const AntdFormView: React.FC<Props> = ({ data, onChange }) => {
       >
         <Row gutter={[16, 8]}>
           {config.map((item) => (
-            <Col key={item.keyName} span={colSpan(item)} offset={colOffset(item)}>
+            <Col key={item.keyName} {...colProps(item)}>
               <AntdFormItem item={item} form={form} />
             </Col>
           ))}
