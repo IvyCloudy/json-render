@@ -1,5 +1,5 @@
 
-# JSON Render 测试样例
+# Data Render 测试样例
 
 这些文件用于手动验证插件各视图与扩展点是否工作正常。
 
@@ -23,7 +23,7 @@
 
 1. 先 `npm run build` 构建；
 2. VS Code 打开本仓库，按 `F5` 启动扩展宿主；
-3. 在宿主窗口中打开本目录任意文件 → 编辑器右上角点 **JSON Render** 图标，或命令面板 `JSON Render: Preview Current File`。
+3. 在宿主窗口中打开本目录任意文件 → 编辑器右上角点 **Data Render** 图标，或命令面板 `Data Render: Preview Current File`。
 
 ## JSONPath 建议试用表达式（打开 `05-deep-nested.json`）
 

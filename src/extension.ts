@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { PreviewPanel } from './previewPanel';
 import { startMockServer, MockServerInfo } from './testing/mockServer';
 
-const SUPPORTED = new Set(['json', 'jsonc', 'jsonl', 'ndjson']);
+const SUPPORTED = new Set(['json', 'jsonc', 'jsonl', 'ndjson', 'yaml']);
 
 let mock: MockServerInfo | null = null;
 let mockOutput: vscode.OutputChannel | null = null;
@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (!targetUri) {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
-        vscode.window.showWarningMessage('JSON Render: no active file.');
+        vscode.window.showWarningMessage('Data Render: no active file.');
         return;
       }
       targetUri = editor.document.uri;
@@ -22,13 +22,14 @@ export function activate(context: vscode.ExtensionContext) {
     try {
       const doc = await vscode.workspace.openTextDocument(targetUri);
       const isJsonlExt = /\.(jsonl|ndjson)$/i.test(doc.fileName);
-      if (!SUPPORTED.has(doc.languageId) && !isJsonlExt) {
-        vscode.window.showWarningMessage('JSON Render: only JSON / JSONC / JSONL / NDJSON files are supported.');
+      const isYamlExt = /\.(yaml|yml)$/i.test(doc.fileName);
+      if (!SUPPORTED.has(doc.languageId) && !isJsonlExt && !isYamlExt) {
+        vscode.window.showWarningMessage('Data Render: only JSON / JSONC / JSONL / NDJSON / YAML files are supported.');
         return;
       }
       PreviewPanel.createOrShow(context, doc);
     } catch (e: any) {
-      vscode.window.showErrorMessage(`JSON Render: failed to open file - ${e?.message ?? e}`);
+      vscode.window.showErrorMessage(`Data Render: failed to open file - ${e?.message ?? e}`);
     }
   });
 
@@ -48,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(`Mock server already running at ${mock.baseUrl}`);
         return;
       }
-      mockOutput = mockOutput ?? vscode.window.createOutputChannel('JSON Render · Mock Server');
+      mockOutput = mockOutput ?? vscode.window.createOutputChannel('Data Render · Mock Server');
       mock = await startMockServer(mockOutput);
       if (mock) {
         mockOutput.show(true);
@@ -72,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
 async function maybeToggleMockServer() {
   const enabled = vscode.workspace.getConfiguration('jsonRender').get<boolean>('enableMockServer', false);
   if (enabled && !mock) {
-    mockOutput = mockOutput ?? vscode.window.createOutputChannel('JSON Render · Mock Server');
+    mockOutput = mockOutput ?? vscode.window.createOutputChannel('Data Render · Mock Server');
     mock = await startMockServer(mockOutput);
   } else if (!enabled && mock) {
     mock.dispose();

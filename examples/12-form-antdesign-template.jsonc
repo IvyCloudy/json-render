@@ -250,6 +250,12 @@
     }
   ],
   "formData": {
-    "gender": "male"
+    "age": 26,
+    "name": "张三",
+    "role": "developer",
+    "email": "example@domain.com",
+    "birthday": "1990-01-01",
+    "active": true,
+    "bio": "这是一个默认的个人简介"
   }
 }

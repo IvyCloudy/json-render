@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { jsonlParse, jsonlStringify, isJsonlFileName } from './common/jsonl';
 
-type FileKind = 'json' | 'jsonl';
+type FileKind = 'json' | 'jsonl' | 'yaml';
 
 type InboundMessage =
   | { type: 'ready' }
@@ -51,7 +52,7 @@ type OutboundMessage =
     };
 
 /**
- * 全局单例预览面板：一次只有一个 JSON Render 窗口，
+ * 全局单例预览面板：一次只有一个 Data Render 窗口，
  * 新打开的 JSON 文件会复用已有窗口并覆盖其内容。
  */
 export class PreviewPanel {
@@ -81,7 +82,7 @@ export class PreviewPanel {
 
     const panel = vscode.window.createWebviewPanel(
       PreviewPanel.viewType,
-      `JSON Render · ${path.basename(document.fileName)}`,
+      `Data Render · ${path.basename(document.fileName)}`,
       column,
       {
         enableScripts: true,
@@ -110,7 +111,7 @@ export class PreviewPanel {
 
     this.panel.webview.html = this.buildHtml();
     this.panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.svg');
-    this.panel.title = `JSON Render · ${path.basename(document.fileName)}`;
+    this.panel.title = `Data Render · ${path.basename(document.fileName)}`;
 
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
@@ -183,7 +184,7 @@ export class PreviewPanel {
     this.suppressNextDocChange = false;
 
     this.document = document;
-    this.panel.title = `JSON Render · ${path.basename(document.fileName)}`;
+    this.panel.title = `Data Render · ${path.basename(document.fileName)}`;
     this.bindDocument();
     // 下发 init 让 webview 完全重置（fileName / fileKind / schema / 默认视图等）
     this.pushToWebview('init');
@@ -198,7 +199,7 @@ export class PreviewPanel {
         this.scheduleWriteBack(msg.payload);
         break;
       case 'error':
-        vscode.window.showErrorMessage(`JSON Render: ${msg.message}`);
+        vscode.window.showErrorMessage(`Data Render: ${msg.message}`);
         break;
       case 'exportCsv':
         await this.saveCsv(msg.content, msg.suggestedName);
@@ -213,7 +214,7 @@ export class PreviewPanel {
         try {
           await vscode.env.openExternal(vscode.Uri.parse(msg.url));
         } catch (e: any) {
-          vscode.window.showErrorMessage(`JSON Render: open url failed - ${e?.message ?? e}`);
+          vscode.window.showErrorMessage(`Data Render: open url failed - ${e?.message ?? e}`);
         }
         break;
     }
@@ -324,6 +325,7 @@ export class PreviewPanel {
   private detectKind(): FileKind {
     if (isJsonlFileName(this.document.fileName)) return 'jsonl';
     if (this.document.languageId === 'jsonl' || this.document.languageId === 'ndjson') return 'jsonl';
+    if (this.document.languageId === 'yaml' || /\.(yaml|yml)$/i.test(this.document.fileName)) return 'yaml';
     return 'json';
   }
 
@@ -334,6 +336,10 @@ export class PreviewPanel {
       if (kind === 'jsonl') {
         const { items } = jsonlParse(text);
         return { ok: true, value: items, kind };
+      }
+      if (kind === 'yaml') {
+        if (text.trim() === '') return { ok: true, value: null, kind };
+        return { ok: true, value: parseYaml(text), kind };
       }
       if (text.trim() === '') return { ok: true, value: null, kind };
       if (this.document.languageId === 'jsonc') {
@@ -388,6 +394,8 @@ export class PreviewPanel {
           throw new Error('JSONL root must be an array. Abort write-back.');
         }
         newText = jsonlStringify(value);
+      } else if (kind === 'yaml') {
+        newText = stringifyYaml(value, { indent: 2 });
       } else {
         newText = JSON.stringify(value, null, 2);
       }
@@ -408,12 +416,12 @@ export class PreviewPanel {
           await this.document.save();
         } catch (saveErr: any) {
           vscode.window.showWarningMessage(
-            `JSON Render: auto-save failed - ${saveErr?.message ?? saveErr}. The document is dirty; press Cmd/Ctrl+S to save manually.`
+            `Data Render: auto-save failed - ${saveErr?.message ?? saveErr}. The document is dirty; press Cmd/Ctrl+S to save manually.`
           );
         }
       }
     } catch (e: any) {
-      vscode.window.showErrorMessage(`JSON Render: write back failed - ${e?.message ?? e}`);
+      vscode.window.showErrorMessage(`Data Render: write back failed - ${e?.message ?? e}`);
     }
   }
 
@@ -428,7 +436,7 @@ export class PreviewPanel {
       await vscode.workspace.fs.writeFile(target, Buffer.from(content, 'utf8'));
       vscode.window.showInformationMessage(`CSV exported to ${target.fsPath}`);
     } catch (e: any) {
-      vscode.window.showErrorMessage(`JSON Render: export CSV failed - ${e?.message ?? e}`);
+      vscode.window.showErrorMessage(`Data Render: export CSV failed - ${e?.message ?? e}`);
     }
   }
 
@@ -483,7 +491,7 @@ export class PreviewPanel {
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JSON Render</title>
+  <title>Data Render</title>
 </head>
 <body>
   <div id="root"></div>

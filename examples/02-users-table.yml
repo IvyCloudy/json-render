@@ -1,0 +1,58 @@
+# YAML Example - Users Table
+# This file demonstrates YAML support in Data Render
+
+- id: 1
+  name: Alice
+  age: 29
+  email: alice@example.com
+  active: true
+  role: admin
+
+- id: 3
+  name: Charlie
+  age: 22
+  email: charlie@example.com
+  active: false
+  role: user
+
+- id: 2
+  name: Nickey
+  age: 6
+  email: ss@example.com
+  active: true
+  role: user
+
+- id: 4
+  name: Diana
+  age: 41
+  email: diana@example.com
+  active: true
+  role: editor
+
+- id: 5
+  name: Eve
+  age: 30
+  email: eve@example.com
+  active: false
+  role: user
+
+- id: 6
+  name: Frank
+  age: 27
+  email: frank@example.com
+  active: true
+  role: user
+
+- id: 7
+  name: Grace
+  age: 38
+  email: grace@example.com
+  active: true
+  role: admin
+
+- id: 8
+  name: Henry
+  age: 45
+  email: henry@example.com
+  active: false
+  role: user

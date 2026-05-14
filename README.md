@@ -1,6 +1,6 @@
-# JSON Render
+# Data Render
 
-把 JSON / JSONL 文件以 **Tree / Table / Form / Chart / Card / Ant Design 动态表单** 6 种视图渲染的 VSCode 插件，支持搜索和**双向编辑**（Webview 编辑后自动写回源文件）。
+把 JSON / JSONL / YAML / CSV 文件以 **Tree / Table / Form / Chart / Card / Ant Design 动态表单** 6 种视图渲染的 VSCode 插件，支持搜索和**双向编辑**（Webview 编辑后自动写回源文件）。
 
 ## 功能
 
@@ -36,7 +36,7 @@ npm run build
 ## 使用
 
 1. 打开任意 `.json` / `.jsonc` / `.jsonl` / `.ndjson` 文件
-2. 点击编辑器右上角 JSON Render 图标，或命令面板 `Cmd/Ctrl+Shift+P` → `JSON Render: Preview Current File`
+2. 点击编辑器右上角 Data Render 图标，或命令面板 `Cmd/Ctrl+Shift+P` → `Data Render: Preview Current File`
 3. 在预览面板中编辑数据，改动会自动同步回源文件
 
 ## 视图自动决策

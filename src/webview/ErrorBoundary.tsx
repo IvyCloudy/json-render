@@ -24,7 +24,7 @@ export class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // 打印到 webview devtools 便于排查
     // eslint-disable-next-line no-console
-    console.error('[JSON Render] render error:', error, info);
+    console.error('[Data Render] render error:', error, info);
     this.setState({ info: info.componentStack ?? null });
   }
 
@@ -43,7 +43,7 @@ export class ErrorBoundary extends React.Component<
     if (!error) return this.props.children;
     return (
       <div className="jr-error" style={{ padding: 12 }}>
-        <strong>JSON Render: 渲染异常</strong>
+        <strong>Data Render: 渲染异常</strong>
         {'\n'}
         {error.message}
         {info ? `\n\n组件栈:${info}` : ''}
