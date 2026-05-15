@@ -1,0 +1,747 @@
+{
+  "discoverer": "XXX/80123456",
+  "__form": {
+    "submit": [
+      {
+        "label": "保存",
+        "url": "https://httpbin.org/anything",
+        "method": "POST",
+        "variant": "primary",
+        "body": {
+          "$formConfig": true
+        }
+      },
+      {
+        "type": "reset",
+        "label": "重置",
+        "variant": "secondary",
+        "confirm": "确定要重置所有字段吗？"
+      }
+    ]
+  },
+  "formConfig": [
+    {
+      "label": "缺陷摘要",
+      "keyName": "summary",
+      "component": "Input",
+      "col": {
+        "span": 24
+      },
+      "tooltip": "请输入证件上的缺陷摘要",
+      "rules": [
+        {
+          "required": true,
+          "message": "缺陷摘要是必填项"
+        },
+        {
+          "max": 125,
+          "message": "不能超过125个字符"
+        }
+      ],
+      "props": {
+        "placeholder": "请输入",
+        "maxLength": 125,
+        "showCount": true
+      }
+    },
+    {
+      "label": "缺陷描述",
+      "keyName": "description",
+      "component": "Input.TextArea",
+      "col": {
+        "span": 24
+      },
+      "defaultValue": "【前提】\n\n【执行步骤】\n\n【预期结果】\n\n【实际结果】",
+      "rules": [
+        {
+          "required": true,
+          "message": "缺陷描述是必填项"
+        }
+      ],
+      "props": {
+        "rows": 8,
+        "placeholder": "请输入缺陷描述"
+      }
+    },
+    {
+      "label": "缺陷状态",
+      "keyName": "status",
+      "component": "Select",
+      "defaultValue": "打开",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择缺陷状态"
+        }
+      ],
+      "options": [
+        {
+          "label": "打开",
+          "value": "打开"
+        },
+        {
+          "label": "关闭",
+          "value": "关闭"
+        },
+        {
+          "label": "重新打开",
+          "value": "重新打开"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "发现人",
+      "keyName": "discoverer",
+      "component": "Select",
+      "defaultValue": "XXX/80123456",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择发现人"
+        }
+      ],
+      "options": [
+        {
+          "label": "XXX/80123456",
+          "value": "XXX/80123456"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "发现日期",
+      "keyName": "discoverDate",
+      "component": "DatePicker",
+      "col": {
+        "span": 6
+      },
+      "props": {
+        "placeholder": "请选择",
+        "format": "YYYY/MM/DD",
+        "style": {
+          "width": "100%"
+        }
+      }
+    },
+    {
+      "label": "缺陷归属",
+      "keyName": "attribution",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择缺陷归属"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "责任人",
+      "keyName": "assignee",
+      "component": "Select",
+      "col": {
+        "span": 8
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择责任人"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "所属系统产品",
+      "keyName": "systemProduct",
+      "component": "Select",
+      "col": {
+        "span": 8
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择所属系统产品"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "严重度",
+      "keyName": "severity",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择严重度"
+        }
+      ],
+      "options": [
+        {
+          "label": "1-致命",
+          "value": "1"
+        },
+        {
+          "label": "2-严重",
+          "value": "2"
+        },
+        {
+          "label": "3-一般",
+          "value": "3"
+        },
+        {
+          "label": "4-轻微",
+          "value": "4"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "优先级",
+      "keyName": "priority",
+      "component": "Select",
+      "defaultValue": "2",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择优先级"
+        }
+      ],
+      "options": [
+        {
+          "label": "1-紧急",
+          "value": "1"
+        },
+        {
+          "label": "2-正常",
+          "value": "2"
+        },
+        {
+          "label": "3-低",
+          "value": "3"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "是否可重现",
+      "keyName": "reproducible",
+      "component": "Select",
+      "defaultValue": "1",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择是否可重现"
+        }
+      ],
+      "options": [
+        {
+          "label": "1-有规律重现",
+          "value": "1"
+        },
+        {
+          "label": "2-偶尔重现",
+          "value": "2"
+        },
+        {
+          "label": "3-无法重现",
+          "value": "3"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "是否反复发生",
+      "keyName": "recurring",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择是否反复发生"
+        }
+      ],
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "缺陷类型",
+      "keyName": "defectType",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择缺陷类型"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "测试任务",
+      "keyName": "testTask",
+      "component": "Select",
+      "defaultValue": "TT2020020001",
+      "col": {
+        "span": 6
+      },
+      "options": [
+        {
+          "label": "TT2020020001",
+          "value": "TT2020020001"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "发现阶段",
+      "keyName": "discoverPhase",
+      "component": "Select",
+      "defaultValue": "ST",
+      "col": {
+        "span": 6
+      },
+      "options": [
+        {
+          "label": "ST 阶段",
+          "value": "ST"
+        },
+        {
+          "label": "SIT 阶段",
+          "value": "SIT"
+        },
+        {
+          "label": "UAT 阶段",
+          "value": "UAT"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "发现轮次",
+      "keyName": "discoverRound",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择发现轮次"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "发现活动",
+      "keyName": "discoverActivity",
+      "component": "Select",
+      "defaultValue": "ST 测试执行",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择发现活动"
+        }
+      ],
+      "options": [
+        {
+          "label": "ST 测试执行",
+          "value": "ST 测试执行"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "所属模块",
+      "keyName": "module",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择所属模块"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择",
+        "showSearch": true
+      }
+    },
+    {
+      "label": "所属业务产品",
+      "keyName": "businessProduct",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择所属业务产品"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择",
+        "showSearch": true
+      }
+    },
+    {
+      "label": "可用性测试",
+      "keyName": "usabilityTest",
+      "component": "Select",
+      "defaultValue": "no",
+      "col": {
+        "span": 6
+      },
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "精准测试",
+      "keyName": "precisionTest",
+      "component": "Select",
+      "defaultValue": "no",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择精准测试"
+        }
+      ],
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "保底案例",
+      "keyName": "bottomCase",
+      "component": "Select",
+      "defaultValue": "no",
+      "col": {
+        "span": 6
+      },
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "日志巡检",
+      "keyName": "logInspection",
+      "component": "Select",
+      "defaultValue": "no",
+      "col": {
+        "span": 6
+      },
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "G01 改造",
+      "keyName": "g01Modification",
+      "component": "Select",
+      "defaultValue": "no",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择G01 改造"
+        }
+      ],
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "G01 分类",
+      "keyName": "g01Category",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择G01 分类"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "G01 分类备注",
+      "keyName": "g01CategoryRemark",
+      "component": "Input",
+      "col": {
+        "span": 6
+      },
+      "props": {
+        "placeholder": "请输入"
+      }
+    },
+    {
+      "label": "数据库迁移类型",
+      "keyName": "dbMigrationType",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "新数据库版本号",
+      "keyName": "newDbVersion",
+      "component": "Input",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请输入新数据库版本号"
+        }
+      ],
+      "props": {
+        "placeholder": "请输入"
+      }
+    },
+    {
+      "label": "AI 缺陷",
+      "keyName": "aiDefect",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择AI 缺陷"
+        }
+      ],
+      "options": [
+        {
+          "label": "是",
+          "value": "yes"
+        },
+        {
+          "label": "否",
+          "value": "no"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "系统环境",
+      "keyName": "systemEnvironment",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择系统环境"
+        }
+      ],
+      "options": [
+        {
+          "label": "开发环境",
+          "value": "dev"
+        },
+        {
+          "label": "测试环境",
+          "value": "test"
+        },
+        {
+          "label": "生产环境",
+          "value": "prod"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "所属平台",
+      "keyName": "platform",
+      "component": "Select",
+      "col": {
+        "span": 6
+      },
+      "rules": [
+        {
+          "required": true,
+          "message": "请选择所属平台"
+        }
+      ],
+      "options": [],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "跟踪人",
+      "keyName": "tracker",
+      "component": "Select",
+      "defaultValue": "叶伟龙/HH02761",
+      "col": {
+        "span": 24
+      },
+      "options": [
+        {
+          "label": "叶伟龙/HH02761",
+          "value": "叶伟龙/HH02761"
+        }
+      ],
+      "props": {
+        "placeholder": "请选择"
+      }
+    },
+    {
+      "label": "添加附件",
+      "keyName": "attachments",
+      "component": "Upload",
+      "col": {
+        "span": 24
+      },
+      "valuePropName": "fileList",
+      "props": {
+        "multiple": true,
+        "accept": ".jpg,.jpeg,.png,.gif,.bmp,.pdf,.doc,.docx,.xls,.xlsx"
+      }
+    }
+  ]
+}
